@@ -3,7 +3,7 @@
 <dom-module id="songs-set">
 	<template>
 
-        <music-parser output="{{parsedSong}}"></music-parser>
+        <music-parser curr-song="[[currSong.events]]" output="{{parsedSong}}"></music-parser>
 
 	</template>
 
@@ -17,9 +17,9 @@
                 },
                 currSong: {
                     type: Array,
-                    notify: true,
+                    notify: true
                 }
-            },
+           },
             getSong: function() {
                 var self = this;
                 var promise = fetch("src/songs/"+ self.songName +".json")

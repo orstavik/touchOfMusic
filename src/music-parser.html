@@ -16,57 +16,79 @@
                 currSong: {
                     type: String,
                     notify: true,
-                    value: "1+A1 1+2B5 1/4+1/8G3@instr 2+D7:loud@instr",
-                    observer: "parseIT"
+                    //value: "0.5+2A1 2.5B5 0.5+G 1/4+1/8G3@instr +2D7:loud@instr",
+                    observer: "parse"
                 }
             },
-            parseIT: function() {
-                debugger;
+            parse: function() {
+//                debugger;
                 var array = this.currSong.split(" ");
-                for (var i = 0; i < array.length; i++) {
-                    var elem = this.parsedSong[i];
-                    this.parsedSong[i] = Object.create(null);
-                    elem.duration = "1";
-                    this.parseNoteOctave(array[i], elem);
-                };
-                console.log(this.parsedSong);
+                for (var i = 0; i < array.length; i++) //{
+					this.parsedSong[i] = this.parseComma(array[i]);
+				console.log(this.parsedSong);
             },
-            parseNoteOctave: function(item, elem) {
-                var ind = item.search(/[A,B,C,D,E,F,G]/);
-                var mid = item.slice(ind+2);
+			parseComma: function(word) {
+				var pieces = word.split(",");
+				for(var i=0; i < pieces.length; i++)
+					pieces[i]= this.parseWord(pieces[i]);
+				if (pieces.length === 1)
+					return pieces[0];
+				return pieces;
+			},
+			parseWord: function(word) {
+            	var wordAr = Object.create(null);
+				var index = word.search(/[a-zA-Z_]/);
 
-                elem.note = item[ind];
-                elem.octave = Number(item[ind+1]);
-
-                if (mid)
-                    this.parseMixin(mid, elem);
-                if (ind > 0)
-                    this.parseDelayDuration(item, elem, ind);
+				if (index === 0) {
+					wordAr.core = this.parseCore(word);
+				} else if (index > 0){
+					wordAr.prefix = this.parsePrefix(word.substr(0,index));
+					wordAr.core = this.parseCore(word.substr(index));
+				} else {
+//					debugger;
+					throw new Error("Illegal word, does not contain any word starting with [a-zA-Z_]");
+				}
+				return wordAr;
             },
-            parseMixin: function(mid, elem) {
-                elem.mixin = mid.split("@")[1];
-                if (mid.split("@")[0]) {
-                    this.parseOptions(mid.split("@")[0], elem);
-            },
-            parseDelayDuration: function(item, elem, ind) {
-                pre = item.slice(0, ind)
-                if (pre.split("+")) {
-                    elem.delay = pre.split("+")[0];
-                    if (pre.split("+")[1]) elem.duration = pre.split("+")[1];
-                }
-                else elem.duration = pre.split("+")[0];
-
-                if (elem.delay && elem.delay.split("/")[1])
-                    elem.delay = elem.delay.split("/")[0] / elem.delay.split("/")[1];
-                if (elem.duration && elem.duration.split("/")[1])
-                    elem.duration = elem.duration.split("/")[0] / elem.duration.split("/")[1];
-
-                elem.delay = elem.delay ? Number(elem.delay) : undefined;
-                elem.duration = elem.duration ? Number(elem.duration) : undefined;
-            },
-            parseOptions: function(mid, elem) {
-                elem.volume = mid.split(":")[1];
-            },
+			parseCore: function(core) {
+            	var pieces = core.split("@");
+				var res = Object.create(null);
+				var ar;
+				if (pieces.length === 1) {
+					ar = this.parseMain(pieces[0]);
+				} else if (pieces.length === 2){
+					ar= this.parseMain(pieces[0]);
+					res.postfix = pieces[1];
+				} else {
+					throw new Error("You are not allowed to write this as a word: " + core);
+				}
+				res.name = ar[0];
+				if (ar.length >1)
+					res.args = ar.slice(1);
+				return res;
+			},
+			parsePrefix: function(prefix) {
+				var index = prefix.search(/[+]/);
+				var res = Object.create(null);
+				res.delay = 0;
+				res.duration = 1;
+				if (index === 0) {
+//					throw Error("Delay+Duration of events are specified as either 2+2Event or 2Event or 2+Event. " +
+//							"The delay is specified infront of a +. " +
+//							"The duration is specified as a multiplier infront of an Event.");
+				} else if (index < 0) {
+					res.duration = prefix;
+				} else if (index === prefix.length-1){
+					res.delay = prefix.substr(0, prefix.length-1);
+				} else if (index > 0){
+					res.delay = prefix.substr(0,index);
+					res.duration = prefix.substr(index+1, prefix.length-1);
+				}
+				return res;
+			},
+            parseMain: function(main) {
+            	return main.split(":");
+            }
 		});
 	</script>
 </dom-module>

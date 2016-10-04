@@ -15,8 +15,10 @@
 
         <div id="button" on-tap="start">Start annoying song</div>
 
-        <songs-set id="libs" song-name="oldMacDonald" curr-song="{{song}}"></songs-set>
-        <game-master id="master" song="[[song]]"></game-master>
+        <event-player will-fire="individual events" tempo="[[]]">
+			<songs-set id="libs" song-name="oldMacDonald" curr-song="{{song}}"></songs-set>
+		</event-player>
+        <game-master id="master" ></game-master>
 
 		<!--<iron-ajax url="myKeySet.json" data-json="[[keyMap]]"></iron-ajax>-->
 		<keyboard-map>
