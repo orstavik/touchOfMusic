@@ -1,0 +1,61 @@
+<link rel="import" href="synthesizer-player.html">
+<link rel="import" href="music-instrument.html">
+
+<dom-module id="game-master">
+	<template>
+
+        <synthesizer-player id="synthesizer">
+            <music-instrument name="piano" base="../assets/piano/"></music-instrument>
+            
+        </synthesizer-player>
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'game-master',
+            properties: {
+                song: {
+                    type: Array,
+                    observer: "sortIt"
+                },
+                index: {
+                    type: Number,
+                    value: 0
+                }
+            },
+            sortIt: function() {
+                if (!this.song)
+                    return;
+                this.sortedSong = this.song.events.sort(function(a,b) {
+                    return a[0] - b[0];
+                });
+            },
+            start: function() {
+                this.timerSet(true);
+            },
+            timerSet: function(bool, step=1) {
+                if (bool) {
+                    var self = this;
+                    this.timer = setTimeout(function() {
+                        self.nextNote();
+                    }, 250*step);
+                }
+                else 
+                    clearInterval(this.timer);
+            },
+            nextNote: function() {
+                var noteTone = this.sortedSong[this.index][2];
+                console.log(this.sortedSong[this.index]);
+                this.$.synthesizer.playTone(noteTone);
+                this.set("index", this.index+1);
+
+                if (this.index < this.sortedSong.length) {
+                    var step = this.sortedSong[this.index][0] - this.sortedSong[this.index-1][0];
+                    this.timerSet(true, step);
+                } else 
+                    this.index = 0;
+            }
+		});
+	</script>
+</dom-module>

@@ -1,0 +1,36 @@
+<link rel="import" href="music-parser.html">
+
+<dom-module id="songs-set">
+	<template>
+
+        <music-parser output="{{parsedSong}}"></music-parser>
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'songs-set',
+            properties: {
+                songName: {
+                    type: String,
+                    observer: "getSong"
+                },
+                currSong: {
+                    type: Array,
+                    notify: true,
+                }
+            },
+            getSong: function() {
+                var self = this;
+                var promise = fetch("src/songs/"+ self.songName +".json")
+                                .then(function(response) {
+                                    return response.json()
+                                }).then(function(json) {
+                                    self.set("currSong", json);
+                                }).catch(function(ex) {
+                                    console.log('failed to load song', ex)
+                                });
+            }
+		});
+	</script>
+</dom-module>

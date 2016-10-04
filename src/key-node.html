@@ -1,0 +1,36 @@
+<dom-module id="key-node">
+	<template>
+		<style>
+			:host([targeted]) {
+				background: blue;
+			}
+
+			:host([whacked]) {
+				animation: whacked 0.5s;
+			}
+
+			@keyframes whacked {
+				from {
+					background: red;
+				}
+				to {
+					background: initial;
+				}
+			}
+		</style>
+
+		[[letter]]
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'key-node',
+			properties: {
+				letter: {
+					type: String
+				}
+			}
+		});
+	</script>
+</dom-module>

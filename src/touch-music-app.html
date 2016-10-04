@@ -1,0 +1,57 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="game-master.html">
+<link rel="import" href="songs-set.html">
+<link rel="import" href="keyboard-map.html">
+<link rel="import" href="keyboard-listener.html">
+<link rel="import" href="key-node.html">
+
+<dom-module id="touch-music-app">
+	<template>
+		<style>
+			:host {
+				display: block;
+			}
+		</style>
+
+        <div id="button" on-tap="start">Start annoying song</div>
+
+        <songs-set id="libs" song-name="oldMacDonald" curr-song="{{song}}"></songs-set>
+        <game-master id="master" song="[[song]]"></game-master>
+
+		<!--<iron-ajax url="myKeySet.json" data-json="[[keyMap]]"></iron-ajax>-->
+		<keyboard-map>
+			<template is="dom-repeat" items="[[keysArray]]">
+				<key-node letter$="[[item]]">
+				<!--<key-mole></key-mole>-->
+				<!--<key-hammer></key-hammer>-->
+				</key-node>
+			</template>
+		</keyboard-map>
+
+		<keyboard-listener on-key-event="keyIsHit" key-set="[[keysArray]]" last-pressed="{{lastKey}}"></keyboard-listener>
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'touch-music-app',
+			properties: {
+				keysArray: {
+					type: Array,
+					value: function() {
+						return [
+							"`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "backspace",
+							"tab", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\",
+							"capslock", "a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'", "enter",
+							"shiftL", "z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "shiftR",
+							"ctrlL", "altL", "space", "altR", "ctrlR"
+						]
+					}
+				}
+			},
+            start: function() {
+                this.$.master.start();
+            }
+		});
+	</script>
+</dom-module>

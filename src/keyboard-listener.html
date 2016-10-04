@@ -1,0 +1,42 @@
+<link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+
+<dom-module id="keyboard-listener">
+	<template>
+
+		<iron-a11y-keys
+            id="keys"
+            keys="[[keysAsString]]"
+            target="[[_getDocumentBody()]]"
+            on-keys-pressed="keyPress">
+        </iron-a11y-keys>
+
+		<!-- KEYPRESSGENERATOR stores -->
+		
+	</template>
+
+	<script>
+		Polymer({
+			is: 'keyboard-listener',
+			properties: {
+				keySet: {
+					type: Array,
+					observer: "updateKeySet"
+				},
+				keysAsString: {
+					type: String,
+					value: ""
+				}
+			},
+			updateKeySet: function() {
+				this.set("keysAsString", this.keySet.join(" "));
+			},
+            keyPress: function(e) {
+                this.fire("key-whacked", e.detail.combo);
+				console.log(e.detail.combo);
+            },
+			_getDocumentBody: function() {
+            	return document.body;
+            }
+		});
+	</script>
+</dom-module>

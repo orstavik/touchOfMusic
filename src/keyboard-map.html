@@ -1,0 +1,62 @@
+<link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+
+<dom-module id="keyboard-map">
+	<template>
+		<style>
+			:host {
+				display: flex;
+				flex-wrap: wrap;
+				width: 80vw;
+			}
+
+			:host ::content key-node {
+				display: inline-block;
+				box-sizing: border-box;
+				width: 6.666%;
+				height: 5.3vw;
+				border: 1px solid black;
+			}
+			
+			:host ::content key-node[letter="backspace"] {
+				width: 13.333%;
+			}
+			
+			:host ::content key-node[letter="tab"] {
+				width: 10%;
+			}
+			
+			:host ::content key-node[letter="\\"] {
+				width: 10%;
+			}
+			
+			:host ::content key-node[letter="capslock"] {
+				width: 11.666%;
+			}
+			
+			:host ::content key-node[letter="enter"] {
+				width: 15%;
+			}
+			
+			:host ::content key-node[letter="shiftL"] {
+				width: 15%;
+			}
+			
+			:host ::content key-node[letter="shiftR"] {
+				width: 18.333%;
+			}
+			
+			:host ::content key-node[letter="space"] {
+				width: 73.333%;
+			}
+		</style>
+
+		<content></content>
+		
+	</template>
+
+	<script>
+		Polymer({
+			is: 'keyboard-map'
+		});
+	</script>
+</dom-module>

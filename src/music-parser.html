@@ -1,0 +1,72 @@
+<dom-module id="music-parser">
+	<template>
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'music-parser',
+            properties: {
+                parsedSong: {
+                    type: Array,
+                    value: function() {
+                        return []
+                    }
+                },
+                currSong: {
+                    type: String,
+                    notify: true,
+                    value: "1+A1 1+2B5 1/4+1/8G3@instr 2+D7:loud@instr",
+                    observer: "parseIT"
+                }
+            },
+            parseIT: function() {
+                debugger;
+                var array = this.currSong.split(" ");
+                for (var i = 0; i < array.length; i++) {
+                    var elem = this.parsedSong[i];
+                    this.parsedSong[i] = Object.create(null);
+                    elem.duration = "1";
+                    this.parseNoteOctave(array[i], elem);
+                };
+                console.log(this.parsedSong);
+            },
+            parseNoteOctave: function(item, elem) {
+                var ind = item.search(/[A,B,C,D,E,F,G]/);
+                var mid = item.slice(ind+2);
+
+                elem.note = item[ind];
+                elem.octave = Number(item[ind+1]);
+
+                if (mid)
+                    this.parseMixin(mid, elem);
+                if (ind > 0)
+                    this.parseDelayDuration(item, elem, ind);
+            },
+            parseMixin: function(mid, elem) {
+                elem.mixin = mid.split("@")[1];
+                if (mid.split("@")[0]) {
+                    this.parseOptions(mid.split("@")[0], elem);
+            },
+            parseDelayDuration: function(item, elem, ind) {
+                pre = item.slice(0, ind)
+                if (pre.split("+")) {
+                    elem.delay = pre.split("+")[0];
+                    if (pre.split("+")[1]) elem.duration = pre.split("+")[1];
+                }
+                else elem.duration = pre.split("+")[0];
+
+                if (elem.delay && elem.delay.split("/")[1])
+                    elem.delay = elem.delay.split("/")[0] / elem.delay.split("/")[1];
+                if (elem.duration && elem.duration.split("/")[1])
+                    elem.duration = elem.duration.split("/")[0] / elem.duration.split("/")[1];
+
+                elem.delay = elem.delay ? Number(elem.delay) : undefined;
+                elem.duration = elem.duration ? Number(elem.duration) : undefined;
+            },
+            parseOptions: function(mid, elem) {
+                elem.volume = mid.split(":")[1];
+            },
+		});
+	</script>
+</dom-module>
