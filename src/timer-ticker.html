@@ -1,0 +1,59 @@
+<dom-module id="timer-ticker">
+    <script>
+        Polymer({
+            is: 'timer-ticker',
+            properties: {
+                ticksPerSecond: {
+                    type: Number,
+                    observer: "_setTickSpeed"
+                },
+                msPerTick: {
+                    type: Number
+                },
+                playing: {
+                    type: Boolean,
+                    value: false,
+                    observer: "_playPause"
+                },
+                ticks: {
+                    type: Number,
+                    value: 0,
+                    notify: true
+                }
+            },
+            _setTickSpeed: function () {
+                this.msPerTick = 1000 / this.ticksPerSecond;
+            },
+            toggle: function () {
+                this.set("playing", !this.playing);
+            },
+            start: function(){
+                this.set("playing", true);
+            },
+            stop: function(){
+                this.set("playing", false);
+            },
+            clear: function(){
+                this._internalCounter = 0;
+            },
+            _playPause: function () {
+                this.playing ? this._start() : this._stop();
+            },
+            _internalCounter : 0,
+            _ticking: null,
+            _start: function () {
+//                if (this._ticking)      //it is already running, then we can just return, we don't need to
+//                    this._stop();
+                this.set("ticks", ++this._internalCounter);
+                this.fire("tick", this._internalCounter);            //we are firing an event "tick" with the ticks from here too
+                var self = this;
+                self._ticking = setTimeout(function () {
+                    self._start();
+                }, this.msPerTick);
+            },
+            _stop: function () {
+                clearTimeout(this._ticking);
+            }
+        });
+    </script>
+</dom-module>

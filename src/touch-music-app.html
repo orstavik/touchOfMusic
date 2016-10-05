@@ -16,7 +16,9 @@
 
         <div id="button" on-tap="start">Start annoying song</div>
 
-        <event-player id="musicSheeter" tempo="1000" on-play="debug" input="[[songAsEvents]]" on-ready="musicPlayerReady">
+        <timer-ticker msPerTick="500" ticks="{{ticks}}"></timer-ticker>
+
+        <event-player id="musicSheeter" tempo="1000" on-play="debug" ticks="[[ticks]]" input="[[songAsEvents]]" on-ready="musicPlayerReady">
 			<songs-set id="libs" song-name="oldMacDonald" curr-song="{{jsonSong}}"></songs-set>
 			<event-list-parser id="eParser" input="{{jsonSong.events}}" output="{{songAsEvents}}"></event-list-parser>
 		</event-player>
