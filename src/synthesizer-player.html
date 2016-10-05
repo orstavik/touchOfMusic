@@ -37,20 +37,6 @@
 				keys: {
 					type: Array
 				},
-				tones: {
-					type: Object,
-					value: function() {
-						return {
-							A: 8,
-							B: 9,
-							C: 3,
-							D: 4,
-							E: 5,
-							F: 6,
-							G: 7
-						}
-					}
-				}
 			},
 			_toArray: function(obj) {
 				debugger;
@@ -63,7 +49,8 @@
 
 					var keys = instruments[i].shadowRoot.querySelectorAll("music-key");
 					for (var j = 0; j < keys.length; j++) {
-						this.sounds[instruments[i].name][j] = [
+						var key = keys[j].dataset.note + keys[j].dataset.octave;
+						this.sounds[instruments[i].name][key] = [
 							instruments[i].base + keys[j].dataset.name,
 							keys[j].dataset.type,
 							keys[j].dataset.number,
@@ -80,14 +67,15 @@
 				this.play(e.target.dataIndex);
 			},
 			playTone: function(tone) {
-				this.play(this.tones[tone]+36+7*3);
+				console.log(tone);
+				this.play(this.sounds.piano[tone][0]);
 			},
 //			playToneOctave: function(tone, octave){
 //				this.play(this.tones[tone])
 //			},
-			play: function(index) {
+			play: function(link) {
 				var request = new XMLHttpRequest();
-				request.open('GET', this.sounds.piano[index][0], true);
+				request.open('GET', link, true);
 				request.responseType = 'arraybuffer';
 				var self = this;
 				request.onload = function() {
