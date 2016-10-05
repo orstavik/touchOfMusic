@@ -67,7 +67,8 @@
 				this.play(e.target.dataIndex);
 			},
 			playTone: function(tone) {
-				console.log(tone);
+				if (tone == "_")
+					return;
 				this.play(this.sounds.piano[tone][0]);
 			},
 //			playToneOctave: function(tone, octave){

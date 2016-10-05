@@ -1,0 +1,33 @@
+<dom-module id="octave-filter">
+	<template>
+
+        <content></content>
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'octave-filter',
+            properties: {
+                octave: {
+                    type: Number,
+                    value: 1
+                }
+            },
+            listeners: {
+                "play": "filterIt"
+            },
+            filterIt: function(e) {
+                var oldoctave = e.detail[1].name.slice(-1);
+                if (Number.isInteger(oldoctave*1)) {
+                    var newoctave = oldoctave*1 + this.octave;
+                    e.detail[1].name = e.detail[1].name.replace(oldoctave, newoctave);
+                } else if (oldoctave !== "_") {
+                    e.detail[1].name += this.octave;
+                }
+                e.stopPropagation();
+                this.fire("playOctave", e.detail);
+            }
+		});
+	</script>
+</dom-module>

@@ -6,7 +6,8 @@
       "rhythm": "4/4",
       "tempo": 1000,
       "tempo-unit": "ms",
-      "scale": "C"
+      "scale": "C",
+      "octave": 5
    },
    "piano": {
       "instrument": "piano",

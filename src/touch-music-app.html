@@ -8,6 +8,7 @@
 <link rel="import" href="timer-ticker.html">
 <link rel="import" href="synthesizer-player.html">
 <link rel="import" href="music-instrument.html">
+<link rel="import" href="octave-filter.html">
 
 <dom-module id="touch-music-app">
 	<template>
@@ -27,12 +28,14 @@
 
         <timer-ticker id="ticker" ms-per-tick="[[tempo]]" ticks="{{ticks}}"></timer-ticker>
 
-        <event-player id="musicSheeter" ticks-per-turn=50 on-play="debug"
-                      log="{{thisIsWhatWeNeedToMatchTheUsersPerformanceAgainst}}" ticks="[[ticks]]"
-                      input="[[songAsEvents]]" on-ready="musicPlayerReady">
-			<songs-set id="libs" song-name="oldMacDonald" curr-song="{{jsonSong}}"></songs-set>
-			<event-list-parser id="eParser" input="{{jsonSong.events}}" output="{{songAsEvents}}"></event-list-parser>
-		</event-player>
+		<octave-filter octave="{{jsonSong.globals.octave}}">
+			<event-player id="musicSheeter" ticks-per-turn=50
+						log="{{thisIsWhatWeNeedToMatchTheUsersPerformanceAgainst}}" ticks="[[ticks]]"
+						input="[[songAsEvents]]" on-ready="musicPlayerReady">
+				<songs-set id="libs" song-name="oldMacDonald" curr-song="{{jsonSong}}"></songs-set>
+				<event-list-parser id="eParser" input="{{jsonSong.events}}" output="{{songAsEvents}}"></event-list-parser>
+			</event-player>
+		</octave-filter>
         <!--<game-master id="master" ></game-master>-->
 
 		<!--<iron-ajax url="myKeySet.json" data-json="[[keyMap]]"></iron-ajax>-->
@@ -63,15 +66,18 @@
 							"shiftL", "z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "shiftR",
 							"ctrlL", "altL", "space", "altR", "ctrlR"
 						]
-					},
-                    tempo: {
-					    type: Number,
-                        value: 20
-                    }
+					}
 				},
+				// tempo: {
+				// 	type: Number,
+				// 	value: 20
+				// },
 				songAsEvents: {
 					type: Array,
 				}
+			},
+			listeners: {
+				"playOctave": "debug"
 			},
 			debug: function(e){
 			    var note = e.detail[1].name.toUpperCase();
