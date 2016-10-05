@@ -1,10 +1,13 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="game-master.html">
+<!--<link rel="import" href="game-master.html">-->
 <link rel="import" href="songs-set.html">
 <link rel="import" href="keyboard-map.html">
 <link rel="import" href="keyboard-listener.html">
 <link rel="import" href="key-node.html">
 <link rel="import" href="event-player.html">
+<link rel="import" href="timer-ticker.html">
+<link rel="import" href="synthesizer-player.html">
+<link rel="import" href="music-instrument.html">
 
 <dom-module id="touch-music-app">
 	<template>
@@ -14,15 +17,23 @@
 			}
 		</style>
 
+        <synthesizer-player id="synthesizer">
+            <music-instrument name="piano" base="../assets/piano/"></music-instrument>
+        </synthesizer-player>
+
+
         <div id="button" on-tap="start">Start annoying song</div>
+        <div id="button2" on-tap="startTicker">Start ticker</div>
 
-        <timer-ticker msPerTick="500" ticks="{{ticks}}"></timer-ticker>
+        <timer-ticker id="ticker" ms-per-tick="[[tempo]]" ticks="{{ticks}}"></timer-ticker>
 
-        <event-player id="musicSheeter" tempo="1000" on-play="debug" ticks="[[ticks]]" input="[[songAsEvents]]" on-ready="musicPlayerReady">
+        <event-player id="musicSheeter" ticks-per-turn=50 on-play="debug"
+                      log="{{thisIsWhatWeNeedToMatchTheUsersPerformanceAgainst}}" ticks="[[ticks]]"
+                      input="[[songAsEvents]]" on-ready="musicPlayerReady">
 			<songs-set id="libs" song-name="oldMacDonald" curr-song="{{jsonSong}}"></songs-set>
 			<event-list-parser id="eParser" input="{{jsonSong.events}}" output="{{songAsEvents}}"></event-list-parser>
 		</event-player>
-        <game-master id="master" ></game-master>
+        <!--<game-master id="master" ></game-master>-->
 
 		<!--<iron-ajax url="myKeySet.json" data-json="[[keyMap]]"></iron-ajax>-->
 		<keyboard-map>
@@ -52,21 +63,28 @@
 							"shiftL", "z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "shiftR",
 							"ctrlL", "altL", "space", "altR", "ctrlR"
 						]
-					}
+					},
+                    tempo: {
+					    type: Number,
+                        value: 20
+                    }
 				},
 				songAsEvents: {
 					type: Array,
-					observer: "debug"
 				}
 			},
 			debug: function(e){
-				console.log(e);
+                console.log(e);
+			    var note = e.detail[1].name[0].toUpperCase();
+			    this.$.synthesizer.playTone(note);
 			},
 			musicPlayerReady: function(){
-				this.$.musicSheeter.onOff();
+				this.start();
 			},
             start: function() {
-                this.$.master.start();
+            },
+            startTicker: function() {
+                this.$.ticker.toggle();
             }
 		});
 	</script>

@@ -4,8 +4,8 @@
    "globals": {
       "target": "piano",
       "rhythm": "4/4",
-      "tempo": 1,
-      "tempo-unit": "stroke",
+      "tempo": 1000,
+      "tempo-unit": "ms",
       "scale": "C"
    },
    "piano": {

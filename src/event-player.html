@@ -1,11 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
 <dom-module id="event-player">
-    <template>
-
-
-    </template>
-
     <script>
         Polymer({
             is: 'event-player',
@@ -19,22 +14,36 @@
                 },
                 tempo: {
                     type: Number,
-                    value: 2000
+                    value: 1
                 },
-                on: {
-                    type: Boolean,
-                    value: false,
-                    observer: "_play"
+                index: {
+                    type: Number,
+                    value: 0
                 },
-                index : {
+                ticks: {
+                    type: Number,
+                    observer: "readMyTicks"
+                },
+                ticksPerTurn: {
+                    type: Number,
+                    value: 50,
+                },
+                log: {
+                    type: Array,
+                    value: function () {
+                        return [];
+                    },
+                    notify: true
+                },
+                tickForNextEvent: {
                     type: Number,
                     value: 0
                 }
             },
-            _getDelay: function (node) {
-                return node.prefix && node.prefix.delay ? node.prefix.delay : 0;
-            },
             makePlayList: function () {
+                //we need to match the tick number with all the elements in the list that has a time value that is
+                //when tick >= the tick.value in the file and tick <= tick.value+1
+                //[[1,a], [1,b], [1,a], [.5,d]]
                 if (!this.input && !this.input.length)
                     return;
                 var res = [];
@@ -42,33 +51,26 @@
                     var node = this.input[i];
                     if (Array.isArray(node)) {                        //input ,-array
                         for (var j = 0; j < node.length; j++)
-                            res.push([(j === 0 ? 1 : 0) + this._getDelay(node[j]), node[j]]);
+                            res.push([(j === 0 ? 1 : 0) + node[j].prefix.delay, node[j]]);
                     } else
-                        res.push([1 + this._getDelay(node), node]);
+                        res.push([1 + node.prefix.delay, node]);
                 }
-                console.log(res);
                 this.set("playList", res);
                 this.fire("ready", null);
             },
-            onOff: function () {
-                this.on = !this.on;
-            },
-            _play: function () {
-                if (this.on) {
-                    var index = this.index++;
-                    this.fireEvent(index);
-                    var delay = this.tempo*this.playList[this.index][0];
-
-                    var self = this;
-                    this.timer = setInterval(function() {
-                        self._play();
-                    }, delay);
+            readMyTicks: function () {
+                if (!this.playList || this.index >= this.playList.length)
+                    return;
+                //Every time we get a tick, we need to count down to 50 to get a full turn.
+                //If the distance to the next turn is less than 1 turn, then 50 is multiplied by the delay.
+                while (this.index === 0 || this.tickForNextEvent === this.ticks){
+                    var event = this.playList[this.index++];
+                    var turnsToNextEvent = this.playList[this.index][0];
+                    this.set("tickForNextEvent", this.ticks + turnsToNextEvent * this.ticksPerTurn);
+                    event.timeStamp = this.fire("play", event).timeStamp;
+                    this.push("log", event);
                 }
-                else
-                    clearInterval(this.timer);
-            },
-            fireEvent: function(index){
-                this.fire("play", this.playList[index]);
+                //else just wait until next tick to see if that matches the next tick to be read.
             }
         });
     </script>

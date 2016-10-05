@@ -68,10 +68,10 @@
 							keys[j].dataset.type,
 							keys[j].dataset.number,
 							keys[j].dataset.note,
-							keys[j].dataset.octave,
+							keys[j].dataset.octave
 						]
 					}
-				};
+				}
 				this.keys = this.sounds.piano;
 				this.audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 			},
@@ -82,6 +82,9 @@
 			playTone: function(tone) {
 				this.play(this.tones[tone]+36+7*3);
 			},
+//			playToneOctave: function(tone, octave){
+//				this.play(this.tones[tone])
+//			},
 			play: function(index) {
 				var request = new XMLHttpRequest();
 				request.open('GET', this.sounds.piano[index][0], true);
