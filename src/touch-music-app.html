@@ -28,7 +28,7 @@
 
         <timer-ticker id="ticker" ms-per-tick="[[tempo]]" ticks="{{ticks}}"></timer-ticker>
 
-		<octave-filter octave="{{jsonSong.globals.octave}}">
+		<octave-filter on-play="debug" octave="{{jsonSong.globals.octave}}">
 			<event-player id="musicSheeter" ticks-per-turn=50
 						log="{{thisIsWhatWeNeedToMatchTheUsersPerformanceAgainst}}" ticks="[[ticks]]"
 						input="[[songAsEvents]]" on-ready="musicPlayerReady">
@@ -75,9 +75,6 @@
 				songAsEvents: {
 					type: Array,
 				}
-			},
-			listeners: {
-				"playOctave": "debug"
 			},
 			debug: function(e){
 			    var note = e.detail[1].name.toUpperCase();

@@ -1,7 +1,7 @@
 <dom-module id="octave-filter">
 	<template>
 
-        <content></content>
+        <content on-play="_alterEvent"></content>
 
 	</template>
 
@@ -14,10 +14,7 @@
                     value: 1
                 }
             },
-            listeners: {
-                "play": "filterIt"
-            },
-            filterIt: function(e) {
+			_alterEvent: function(e) {
                 var oldoctave = e.detail[1].name.slice(-1);
                 if (Number.isInteger(oldoctave*1)) {
                     var newoctave = oldoctave*1 + this.octave;
@@ -25,8 +22,6 @@
                 } else if (oldoctave !== "_") {
                     e.detail[1].name += this.octave;
                 }
-                e.stopPropagation();
-                this.fire("playOctave", e.detail);
             }
 		});
 	</script>
