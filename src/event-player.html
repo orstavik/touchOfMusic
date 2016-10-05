@@ -1,0 +1,75 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="event-player">
+    <template>
+
+
+    </template>
+
+    <script>
+        Polymer({
+            is: 'event-player',
+            properties: {
+                input: {
+                    type: Array,
+                    observer: "makePlayList"
+                },
+                playList: {
+                    type: Array
+                },
+                tempo: {
+                    type: Number,
+                    value: 2000
+                },
+                on: {
+                    type: Boolean,
+                    value: false,
+                    observer: "_play"
+                },
+                index : {
+                    type: Number,
+                    value: 0
+                }
+            },
+            _getDelay: function (node) {
+                return node.prefix && node.prefix.delay ? node.prefix.delay : 0;
+            },
+            makePlayList: function () {
+                if (!this.input && !this.input.length)
+                    return;
+                var res = [];
+                for (var i = 0; i < this.input.length; i++) {
+                    var node = this.input[i];
+                    if (Array.isArray(node)) {                        //input ,-array
+                        for (var j = 0; j < node.length; j++)
+                            res.push([(j === 0 ? 1 : 0) + this._getDelay(node[j]), node[j]]);
+                    } else
+                        res.push([1 + this._getDelay(node), node]);
+                }
+                console.log(res);
+                this.set("playList", res);
+                this.fire("ready", null);
+            },
+            onOff: function () {
+                this.on = !this.on;
+            },
+            _play: function () {
+                if (this.on) {
+                    var index = this.index++;
+                    this.fireEvent(index);
+                    var delay = this.tempo*this.playList[this.index][0];
+
+                    var self = this;
+                    this.timer = setInterval(function() {
+                        self._play();
+                    }, delay);
+                }
+                else
+                    clearInterval(this.timer);
+            },
+            fireEvent: function(index){
+                this.fire("play", this.playList[index]);
+            }
+        });
+    </script>
+</dom-module>

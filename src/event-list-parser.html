@@ -1,94 +1,97 @@
-<dom-module id="music-parser">
-	<template>
+<dom-module id="event-list-parser">
+    <template>
 
-	</template>
+    </template>
 
-	<script>
-		Polymer({
-			is: 'music-parser',
+    <script>
+        Polymer({
+            is: 'event-list-parser',
             properties: {
-                parsedSong: {
+                output: {
                     type: Array,
-                    value: function() {
-                        return []
-                    }
+                    notify: true
                 },
-                currSong: {
+                input: {
                     type: String,
                     notify: true,
-                    //value: "0.5+2A1 2.5B5 0.5+G 1/4+1/8G3@instr +2D7:loud@instr",
+//                    value: "0.5+2A1 2.5B5 0.5+G 1/4+1/8G3@instr +2D7:loud@instr",
                     observer: "parse"
                 }
             },
-            parse: function() {
-//                debugger;
-                var array = this.currSong.split(" ");
+            parse: function () {
+                if (!this.input)
+                    return;
+                var array = this.input.split(" ");
                 for (var i = 0; i < array.length; i++) //{
-					this.parsedSong[i] = this.parseComma(array[i]);
-				console.log(this.parsedSong);
+                    array [i] = this.parseComma(array[i]);
+                this.set("output", array);
             },
-			parseComma: function(word) {
-				var pieces = word.split(",");
-				for(var i=0; i < pieces.length; i++)
-					pieces[i]= this.parseWord(pieces[i]);
-				if (pieces.length === 1)
-					return pieces[0];
-				return pieces;
-			},
-			parseWord: function(word) {
-            	var wordAr = Object.create(null);
-				var index = word.search(/[a-zA-Z_]/);
+            parseComma: function (word) {
+                var pieces = word.split(",");
+                for (var i = 0; i < pieces.length; i++)
+                    pieces[i] = this.parseWord(pieces[i]);
+                if (pieces.length === 1)
+                    return pieces[0];
+                return pieces;
+            },
+            _getDefaultParseObject: function () {
+                var o = Object.create(null);
+                o.prefix = Object.create(null);
+                o.prefix.delay = 0;
+                o.prefix.duration = 1;
+                return o;
+            },
+            parseWord: function (word) {
+                var w = this._getDefaultParseObject();
+                var index = word.search(/[a-zA-Z_]/);
 
-				if (index === 0) {
-					wordAr.core = this.parseCore(word);
-				} else if (index > 0){
-					wordAr.prefix = this.parsePrefix(word.substr(0,index));
-					wordAr.core = this.parseCore(word.substr(index));
-				} else {
-//					debugger;
-					throw new Error("Illegal word, does not contain any word starting with [a-zA-Z_]");
-				}
-				return wordAr;
+                if (index === 0) {
+                    this.parseCore(w, word);
+                } else if (index > 0) {
+                    this.parsePrefix(w.prefix, word.substr(0, index));
+                    this.parseCore(w, word.substr(index));
+                } else {
+                    throw new Error("Syntax error: All events must include a word starting with [a-zA-Z_]: " + word);
+                }
+                return w;
             },
-			parseCore: function(core) {
-            	var pieces = core.split("@");
-				var res = Object.create(null);
-				var ar;
-				if (pieces.length === 1) {
-					ar = this.parseMain(pieces[0]);
-				} else if (pieces.length === 2){
-					ar= this.parseMain(pieces[0]);
-					res.postfix = pieces[1];
-				} else {
-					throw new Error("You are not allowed to write this as a word: " + core);
-				}
-				res.name = ar[0];
-				if (ar.length >1)
-					res.args = ar.slice(1);
-				return res;
-			},
-			parsePrefix: function(prefix) {
-				var index = prefix.search(/[+]/);
-				var res = Object.create(null);
-				res.delay = 0;
-				res.duration = 1;
-				if (index === 0) {
-//					throw Error("Delay+Duration of events are specified as either 2+2Event or 2Event or 2+Event. " +
-//							"The delay is specified infront of a +. " +
-//							"The duration is specified as a multiplier infront of an Event.");
-				} else if (index < 0) {
-					res.duration = prefix;
-				} else if (index === prefix.length-1){
-					res.delay = prefix.substr(0, prefix.length-1);
-				} else if (index > 0){
-					res.delay = prefix.substr(0,index);
-					res.duration = prefix.substr(index+1, prefix.length-1);
-				}
-				return res;
-			},
-            parseMain: function(main) {
-            	return main.split(":");
+            parseCore: function (wordAr, core) {
+                var pieces = core.split("@");
+                if (pieces.length > 2)
+                    throw new Error("Syntax error: Only one postfix ('@') is allowed: " + core);
+                if (pieces.length === 2)
+                    wordAr.postfix = pieces[1];
+                var ar = pieces[0].split(":");
+                wordAr.name = ar[0];
+                if (ar.length > 1)
+                    wordAr.args = ar.slice(1);
+            },
+            parsePrefix: function (res, prefix) {
+                var dd = prefix.split("+");
+                if (dd.length === 1) { //no delay, only duration
+                    res.duration = this._convertToNumber(dd[0]);
+                } else if (dd.length > 2) {
+                    throw Error("Syntax error: Illegal prefix Number format. " +
+                            "Only 1 '+' is allowed in the prefix: "+ prefix);
+                } else if (dd[0] === "") {
+                    throw Error("Syntax error: Illegal prefix Number format. " +
+                            "'+' cannot start a prefix. " +
+                            "'+' is put _after_ the delay value, not in front: " + prefix);
+                } else {
+                    res.delay = this._convertToNumber(dd[0]);
+                    if (dd[1])        //don't bother with converting number if the duration is not specified
+                        res.duration = this._convertToNumber(dd[1]);
+                }
+            },
+            _convertToNumber: function (str) {
+                var i = str.search(/[^\d./^%]/);
+                if (i !== -1)
+                    throw new Error("Syntax error: Illegal prefix Number format. " +
+                                    "Delay and duration only support numbers using these symbols: [0-9./%^]. " +
+                                    "Your number was: " + str + " and the illegal symbol was: " + str[i] +
+                                    "Tips! + and - is not allowed in the delay and duration description.");
+                return eval(str);
             }
-		});
-	</script>
+        });
+    </script>
 </dom-module>

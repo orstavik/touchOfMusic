@@ -4,6 +4,7 @@
 <link rel="import" href="keyboard-map.html">
 <link rel="import" href="keyboard-listener.html">
 <link rel="import" href="key-node.html">
+<link rel="import" href="event-player.html">
 
 <dom-module id="touch-music-app">
 	<template>
@@ -15,8 +16,9 @@
 
         <div id="button" on-tap="start">Start annoying song</div>
 
-        <event-player will-fire="individual events" tempo="[[]]">
-			<songs-set id="libs" song-name="oldMacDonald" curr-song="{{song}}"></songs-set>
+        <event-player id="musicSheeter" tempo="1000" on-play="debug" input="[[songAsEvents]]" on-ready="musicPlayerReady">
+			<songs-set id="libs" song-name="oldMacDonald" curr-song="{{jsonSong}}"></songs-set>
+			<event-list-parser id="eParser" input="{{jsonSong.events}}" output="{{songAsEvents}}"></event-list-parser>
 		</event-player>
         <game-master id="master" ></game-master>
 
@@ -49,7 +51,17 @@
 							"ctrlL", "altL", "space", "altR", "ctrlR"
 						]
 					}
+				},
+				songAsEvents: {
+					type: Array,
+					observer: "debug"
 				}
+			},
+			debug: function(e){
+				console.log(e);
+			},
+			musicPlayerReady: function(){
+				this.$.musicSheeter.onOff();
 			},
             start: function() {
                 this.$.master.start();
