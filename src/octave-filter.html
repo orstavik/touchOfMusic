@@ -15,12 +15,12 @@
                 }
             },
 			_alterEvent: function(e) {
-                var oldoctave = e.detail[1].name.slice(-1);
+                var oldoctave = e.detail.name.slice(-1);
                 if (Number.isInteger(oldoctave*1)) {
                     var newoctave = oldoctave*1 + this.octave;
-                    e.detail[1].name = e.detail[1].name.replace(oldoctave, newoctave);
+                    e.detail.name = e.detail.name.replace(oldoctave, newoctave);
                 } else if (oldoctave !== "_") {
-                    e.detail[1].name += this.octave;
+                    e.detail.name += this.octave;
                 }
             }
 		});

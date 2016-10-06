@@ -1,7 +1,19 @@
 <dom-module id="event-list-parser">
-    <template>
 
-    </template>
+    <!--
+    This handles the following format:
+
+    prefixWORDpostfix
+
+    prefix = delay+duration
+    WORD = NAME:ARG:ARG
+    postfix = @macro
+
+    delay+durationNAME:ARG:ARG@macro
+
+    examples:
+    0.5+2G:v.8@guitar => wait half a turn until you play a note G that takes
+    -->
 
     <script>
         Polymer({
@@ -43,7 +55,7 @@
             },
             parseWord: function (word) {
                 var w = this._getDefaultParseObject();
-                var index = word.search(/[a-zA-Z_]/);
+                var index = word.search(/[a-zA-Z_$]/);
 
                 if (index === 0) {
                     this.parseCore(w, word);

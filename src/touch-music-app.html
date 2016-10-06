@@ -77,7 +77,7 @@
 				}
 			},
 			debug: function(e){
-			    var note = e.detail[1].name.toUpperCase();
+			    var note = e.detail.name.toUpperCase();
 			    this.$.synthesizer.playTone(note);
 			},
 			musicPlayerReady: function(){

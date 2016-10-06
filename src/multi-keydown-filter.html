@@ -1,0 +1,33 @@
+<dom-module id="multi-keydown-filter">
+    <template>
+        <content on-keydown="_keyDown" on-keyup="_keyUp"></content>
+    </template>
+    <script>
+        Polymer({
+            is: 'multi-keydown-filter',
+            properties: {
+                _keysdown : {
+                    type : Array,
+                    value : function(){
+                        return [];
+                    }
+                }
+            },
+            _keyDown: function (e) {
+                var i = this._keysdown.indexOf(e.key);
+                if (i === -1)
+                    this._keysdown.push(e.key);
+                if (this._keysdown.length > 1){
+                    var keysAsString = this._keysdown.join("+");
+                    this.fire("multikeydown", keysAsString);
+                }
+            },
+            _keyUp: function (e) {
+                var i = this._keysdown.indexOf(e.key);
+                this._keysdown.splice(i, 1);
+                if (i == -1)
+                    throw new Error("WTF is wrong with the keyboard?!");
+            }
+        });
+    </script>
+</dom-module>

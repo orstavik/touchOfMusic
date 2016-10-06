@@ -1,6 +1,6 @@
 {
    "name": "Old MacDonald",
-   "events": "c1 c1 c1 g a a 2g _ e1 e1 d1 d1 3c1 _ _ g c1 c1 c1 g a a 2g _ e1 e1 d1 d1 3c _ _ .5g,.5+.5g c1 c1 c1 .5g,.5+.5g c1 c1 c1 _ .5c1,.5+.5c1 c1 .5c1,.5+.5c1 c1 .5c1,.5+.5c1 .5c1,.5+.5c1 c1 c1 c1 c1 c1 g a a 2g _ e1 e1 d1 d1 3c1 _ _ _",
+   "events": "c1 c1 c1,$s:2 g a a 2g _ e1 e1 d1 d1 3c1 _ _ g c1 c1 c1 g a a,$s:1/2 2g _ e1 e1 d1 d1 3c _ _ .5g,.5+.5g c1 c1 c1 .5g,.5+.5g c1 c1 c1 _ .5c1,.5+.5c1 c1 .5c1,.5+.5c1 c1 .5c1,.5+.5c1 .5c1,.5+.5c1 c1 c1 c1 c1 c1 g a a 2g _ e1 e1 d1 d1 3c1 _ _ _",
    "globals": {
       "target": "piano",
       "rhythm": "4/4",

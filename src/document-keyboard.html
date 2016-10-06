@@ -1,0 +1,23 @@
+<dom-module id="document-keyboard">
+    <template>
+        <style>
+            #invisibletext {
+                position: fixed;
+                left: -1000px;
+                top: -1000px;
+                width: 100px;
+                height: 100px;
+            }
+        </style>
+        <textarea name="texty" id="invisibletext" cols="30" rows="10" autofocus on-blur="giveMeBackMyFocus"></textarea>
+    </template>
+    <script>
+        Polymer({
+            is: 'document-keyboard',
+            properties: {},
+            giveMeBackMyFocus: function () {
+                this.$.invisibletext.focus();
+            }
+        });
+    </script>
+</dom-module>

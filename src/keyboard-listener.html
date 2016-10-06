@@ -1,42 +1,35 @@
-<link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<!--<link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">-->
+<link rel="import" href="multi-keydown-filter.html">
+<link rel="import" href="document-keyboard.html">
 
 <dom-module id="keyboard-listener">
-	<template>
-
-		<iron-a11y-keys
-            id="keys"
-            keys="[[keysAsString]]"
-            target="[[_getDocumentBody()]]"
-            on-keys-pressed="keyPress">
-        </iron-a11y-keys>
-
-		<!-- KEYPRESSGENERATOR stores -->
-		
-	</template>
-
-	<script>
-		Polymer({
-			is: 'keyboard-listener',
-			properties: {
-				keySet: {
-					type: Array,
-					observer: "updateKeySet"
-				},
-				keysAsString: {
-					type: String,
-					value: ""
-				}
-			},
-			updateKeySet: function() {
-				this.set("keysAsString", this.keySet.join(" "));
-			},
-            keyPress: function(e) {
-                this.fire("key-whacked", e.detail.combo);
-				console.log(e.detail.combo);
+    <template>
+        <multi-keydown-filter on-multikeydown="multikeys" on-keydown="singlekeys" on-keyup="singlekeys">
+            <document-keyboard></document-keyboard>
+            <!--<iron-a11y-keys id="keys" keys="[[keysAsString]]" target="[[_getDocumentBody]]" on-keys-pressed="keyPress"></iron-a11y-keys>-->
+        </multi-keydown-filter>
+    </template>
+    <script>
+        Polymer({
+            is: 'keyboard-listener',
+            properties: {
+                log: {
+                    type: Array,
+                    value: function () {
+                        return [];
+                    }
+                }
             },
-			_getDocumentBody: function() {
-            	return document.body;
+            multikeys: function (e) {
+                this.push("log", e);
+                //ae alt+e a+e timestamp+e a
+                console.log(e);
+            },
+            singlekeys: function (e) {
+                this.push("log", e);
+                //ae alt+e a+e timestamp+e a
+//                console.log(e);
             }
-		});
-	</script>
+        });
+    </script>
 </dom-module>

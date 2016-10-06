@@ -58,19 +58,36 @@
                 this.set("playList", res);
                 this.fire("ready", null);
             },
+            execute: function (event) {
+                if (event.name.indexOf("$s") === 0){     //time command: speed
+                    var factor = this._convertToNumber(event.args[0]);
+                    this.set("ticksPerTurn", this.ticksPerTurn / factor)
+                } else {
+                    event.timeStamp = this.fire("play", event).timeStamp;
+                }
+                this.push("log", event);
+            },
             readMyTicks: function () {
                 if (!this.playList || this.index >= this.playList.length)
                     return;
                 //Every time we get a tick, we need to count down to 50 to get a full turn.
                 //If the distance to the next turn is less than 1 turn, then 50 is multiplied by the delay.
                 while (this.index === 0 || this.tickForNextEvent === this.ticks){
-                    var event = this.playList[this.index++];
-                    var turnsToNextEvent = this.playList[this.index][0];
+                    var event = this.playList[this.index];
+                    this.execute(event[1]);
+                    var turnsToNextEvent = this.playList[++this.index][0];
                     this.set("tickForNextEvent", this.ticks + turnsToNextEvent * this.ticksPerTurn);
-                    event.timeStamp = this.fire("play", event).timeStamp;
-                    this.push("log", event);
                 }
                 //else just wait until next tick to see if that matches the next tick to be read.
+            },
+            _convertToNumber: function (str) {
+                var i = str.search(/[^\d./^%]/);
+                if (i !== -1)
+                    throw new Error("Syntax error: Illegal prefix Number format. " +
+                            "Delay and duration only support numbers using these symbols: [0-9./%^]. " +
+                            "Your number was: " + str + " and the illegal symbol was: " + str[i] +
+                            "Tips! + and - is not allowed in the delay and duration description.");
+                return eval(str);
             }
         });
     </script>
