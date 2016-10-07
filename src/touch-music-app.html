@@ -27,7 +27,7 @@
 
         <timer-ticker id="ticker" ms-per-tick="[[tempo]]" ticks="{{ticks}}"></timer-ticker>
 
-		<octave-filter on-play="debug" octave="{{jsonSong.globals.octave}}">
+		<octave-filter on-play="showTone" octave="{{jsonSong.globals.octave}}">
 			<event-player id="musicSheeter" ticks-per-turn=50
 						log="{{thisIsWhatWeNeedToMatchTheUsersPerformanceAgainst}}" ticks="[[ticks]]"
 						input="[[jsonSong.songAsEvents]]" on-ready="musicPlayerReady">
@@ -47,7 +47,10 @@
 			</template>
 		</keyboard-map>
 
-		<keyboard-listener on-key-event="keyIsHit" key-set="[[keysArray]]" last-pressed="{{lastKey}}"></keyboard-listener>
+		<finger-position-map id="fingerPositionMap"></finger-position-map>
+		<finger-move-to-tone-map id="fingerMoveToToneMap"></finger-move-to-tone-map>
+
+		<keyboard-listener on-play_soon="playFingerMoveMusic" on-key-event="keyIsHit" key-set="[[keysArray]]" last-pressed="{{lastKey}}"></keyboard-listener>
 
 	</template>
 
@@ -68,14 +71,34 @@
 					}
 				},
 				songAsEvents: {
-					type: Array,
+					type: Array
 				}
 			},
-			debug: function(e){
+			playFingerMoveMusic: function(e){
+				var code = e.code;
+				var fingerMovement = this.$.fingerPositionMap.translate(code);
+				var tone = this.$.fingerMoveToToneMap.translate(fingerMovement);
+			    this.$.synthesizer.playTone(tone);
+			},
+			showTone: function(e){
 			    var note = e.detail.name.toUpperCase() + (e.detail.args ? e.detail.args[0] : "");
 			    this.$.synthesizer.playTone(note);
 			},
-            startTicker: function() {
+			showToneSoon: function(e){
+				//from the event, i could get a series of properties, such that I had the event, and I could just ask:
+				//e.code
+				//e.fingerMovement
+				//e.letter
+				//e.tone
+				var tone = e.detail.name.toUpperCase();
+				var fingerMovement = this.$.fingerMoveToToneMap.translate(tone);
+				var code = this.$.fingerPositionMap.translate(fingerMovement);
+				var letter = this.$.codeToKeyMap.translate(code);
+				var visualLetter = this.$$("key[letter="+letter+"]");
+				visualLetter.show();
+				this.$.synthesizer.playTone(note);
+			},
+			startTicker: function() {
                 this.$.ticker.toggle();
             }
 		});

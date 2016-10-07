@@ -24,7 +24,23 @@
     WORD = NAME[:ARG]*              :ARG are optional. All args that can be converted to a number, are converted to a number.
                                     This also applies to "1/8" which might be beneficial to keep as strings.. they are converted now, this might need to be altered later.
 
-    Postfix = @macro
+    Postfix = @typename:propname:propname
+                                    All types can be described in json as follows:
+                                    typename : {name1 : defaultvalue1, name2 : defaultvalue2, etc}.
+
+                                    The result is as follows: You can have
+                                    a)
+                                    event = "g:1",
+                                    type = @piano,
+                                    "piano" : {"octave": 0, "volume": 0.8}
+                                    =>
+                                    "g:1:0.8@piano:octave:volume"
+                                    b)
+                                    event = "g:1@piano:volume",
+                                    type = @piano,
+                                    "piano" : {"octave": 0, "volume": 0.8}
+                                    =>
+                                    "g:1:0@piano:volume:octave"
 
     Numbers.                        All units that consists only of the characters "0123456789.-/^%"
     NAME                            starts with a-zA-Z_$ and ends at the first ":@ " (Colon, at and space).
@@ -47,6 +63,13 @@
     type "c", "g", "a" etc from direction default=top, 1=left.
 
     TODO: Should we add "-" to describe events that are to be played sequentially, one after the other?
+
+    The filters of events can reduce the values, but more likely they just add more values to the event.
+    And then it is only a point when we compare two events that we have the same property to compare against.
+    So this could be a general "event comparator", in which we just need to specify against which properties
+    we are comparing.
+    That would result in an event distance object. This is the distance between certain properties in two events.
+
     -->
 
     <script>

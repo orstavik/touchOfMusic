@@ -13,24 +13,28 @@
                     }
                 }
             },
-            _keyDown: function (e) {
-                if (this._keysdown.indexOf(e.key) === -1)
-                    this._keysdown.push(e.key);
-                if (this._keysdown.length === 0)
-                    return;
-
+            _makeEvent: function (ar) {
                 var res = "";
-                for (var i = 0; i < this._keysdown.length; i++) {
-                    var key = this._keysdown[i];
+                for (var i = 0; i < ar.length; i++) {
+                    var key = ar[i];
                     res = (key.length === 1) ? key + res : res + ":" + key;
                 }
-                this.fire("multikeydown", res);
+                return {name: res, children: ar};
+            },
+            _keyDown: function (e) {
+                if (this._keysdown.indexOf(e.code) === -1)
+                    this._keysdown.push(e.code);
+                if (this._keysdown.length <= 1)
+                    return;
+                var detail = this._makeEvent(this._keysdown);
+                this.fire("multikeydown", detail);
             },
             _keyUp: function (e) {
-                var i = this._keysdown.indexOf(e.key);
-                this._keysdown.splice(i, 1);
+                var i = this._keysdown.indexOf(e.code);
                 if (i == -1)
-                    throw new Error("WTF is wrong with the keyboard?!");
+                    return;
+                    //throw new Error("WTF is wrong with the keyboard?!");
+                this._keysdown.splice(i, 1);
             }
         });
     </script>

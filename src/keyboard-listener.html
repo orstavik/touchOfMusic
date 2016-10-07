@@ -2,17 +2,35 @@
 <link rel="import" href="multi-keydown-filter.html">
 <link rel="import" href="document-keyboard.html">
 <link rel="import" href="keyevent-code.html">
+<link rel="import" href="finger-position-filter.html">
 
 <dom-module id="keyboard-listener">
     <template>
         <multi-keydown-filter on-multikeydown="multikeys" on-keydown="singlekeys" on-keyup="singlekeys">
-            <finger-position-polyfill i-will-adds-finger-positions-to-events>
+            <finger-position-filter i-will-adds-finger-positions-to-events>
                 <keyevent-code>
                     <document-keyboard></document-keyboard>
                 </keyevent-code>
-            </finger-position-polyfill>
+            </finger-position-filter>
             <!--<iron-a11y-keys id="keys" keys="[[keysAsString]]" target="[[_getDocumentBody]]" on-keys-pressed="keyPress"></iron-a11y-keys>-->
         </multi-keydown-filter>
+
+        <!-- azerty
+
+            a s => as
+            a:KeyQ:-441:g#
+            s:KeyS:-341:f#
+            a:KeyQ:-441:g#,s:KeyS:-341:f#
+
+            NAME:a:KeyQ:-441:g#@target
+            c c f g g:1
+            arg:arg:arg:arg:arg@name
+
+            judge
+
+            c#
+        -->
+
     </template>
     <script>
         Polymer({
@@ -26,10 +44,11 @@
                 }
             },
             multikeys: function (e) {
-                this.push("log", e);
                 console.log(e);
+                this.push("log", e);
             },
             singlekeys: function (e) {
+                console.log(e);
                 this.push("log", e);
             }
         });

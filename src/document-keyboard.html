@@ -9,15 +9,27 @@
                 height: 100px;
             }
         </style>
-        <textarea name="texty" id="invisibletext" cols="30" rows="10" autofocus on-blur="giveMeBackMyFocus"></textarea>
+        <textarea on-keydown="_handleSpecialKeys" name="texty" id="invisibletext" cols="30" rows="10"
+                  autofocus on-blur="_giveMeBackMyFocus"></textarea>
     </template>
     <script>
         Polymer({
             is: 'document-keyboard',
             properties: {},
-            giveMeBackMyFocus: function () {
+            _giveMeBackMyFocus: function () {
                 this.$.invisibletext.focus();
+            },
+            _handleSpecialKeys: function (e) {
+                if (    e.key === "Alt" ||
+                        e.key === "AltGraph" ||
+                        e.key === "ContextMenu" ||
+                        e.key === "Shift" ||
+//                        e.key === "Meta" ||   //doesnt work
+                        e.key === "Control" ||
+                        e.key === "Tab")
+                    e.preventDefault();
             }
+
         });
     </script>
 </dom-module>
