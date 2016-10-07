@@ -45,13 +45,14 @@
 			attached: function() {
 				var instruments = this.querySelectorAll("music-instrument");
 				for (var i = 0; i < instruments.length; i++) {
-					this.sounds[instruments[i].name] = [];
+					var instrument = instruments[i];
+					this.sounds[instrument.name] = [];
 
-					var keys = instruments[i].shadowRoot.querySelectorAll("music-key");
+					var keys = instrument.shadowRoot.querySelectorAll("music-key");
 					for (var j = 0; j < keys.length; j++) {
 						var key = keys[j].dataset.note + keys[j].dataset.octave;
-						this.sounds[instruments[i].name][key] = [
-							instruments[i].base + keys[j].dataset.name,
+						this.sounds[instrument.name][key] = [
+							instrument.base + keys[j].dataset.name,
 							keys[j].dataset.type,
 							keys[j].dataset.number,
 							keys[j].dataset.note,
