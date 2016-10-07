@@ -21,10 +21,12 @@
                                     Delay always ends with a "+".
                                     Delay is always in front of duration.
 
-    WORD = NAME[:ARG]*              :ARG are optional. All args that can be converted to a number, are converted to a number.
-                                    This also applies to "1/8" which might be beneficial to keep as strings.. they are converted now, this might need to be altered later.
+    WORD = [ARG][:ARG]*             All args that can be converted to a number, will be converted to a number.
+                                    This also applies to "1/8" which might be beneficial to keep as strings..
+                                    they are converted now, this might need to be altered later.
 
-    Postfix = @typename:propname:propname
+    Postfix = [@type][?prop:prop]
+    Postfix = [?prop[:prop]*][@type]
                                     All types can be described in json as follows:
                                     typename : {name1 : defaultvalue1, name2 : defaultvalue2, etc}.
 
@@ -34,9 +36,9 @@
                                     type = @piano,
                                     "piano" : {"octave": 0, "volume": 0.8}
                                     =>
-                                    "g:1:0.8@piano:octave:volume"
+                                    "g:1:0.8@piano?octave:volume"
                                     b)
-                                    event = "g:1@piano:volume",
+                                    event = "g:1@piano?volume",
                                     type = @piano,
                                     "piano" : {"octave": 0, "volume": 0.8}
                                     =>
@@ -76,8 +78,8 @@
 
         function EventObject(str) {
             this.prefix = Object.create(null);
-            this.prefix.delay = 0;
-            this.prefix.duration = 1;
+            this.delay = 0;
+            this.duration = 1;
             this.parse(str);
         }
 
@@ -103,9 +105,27 @@
                 var pieces = stem.split("@");
                 if (pieces.length > 2)
                     throw new Error("Syntax error: Only one postfix ('@') is allowed: " + stem);
-                if (pieces.length === 2)
-                    this.postfix = pieces[1].split(":");
-                this.args = this.parseValues(pieces[0]);
+                //do postfix first.
+                var doneProps = false;
+                if (pieces.length === 2) {
+                    var pieces3 = pieces[1].split("?");
+                    if (pieces3.length === 2) {
+                        doneProps = true;
+                        this.props = pieces3[1].split(":");
+                        this.type = pieces3[0];
+                    }
+                }
+                var values = pieces[0];
+                var pieces2 = values.split("?");
+                if (pieces2.length > 2)
+                    throw new Error("Syntax error: Only one one property-separator ('?') is allowed: " + stem);
+                if (pieces2.length === 2) {
+                    if (doneProps)
+                        throw new Error("Syntax error: Only one one property-separator ('?') is allowed: " + stem);
+                    this.props = pieces2[1].split(":");
+                    values = pieces2[0];
+                }
+                this.args = this.parseValues(values);
             },
             parseValues: function (values) {
                 var ar = values.split(":");
@@ -116,7 +136,7 @@
             parsePrefix: function (prefix) {
                 var dd = prefix.split("+");
                 if (dd.length === 1) { //no delay, only duration
-                    this.prefix.duration = this.parseNumber(dd[0]);
+                    this.duration = this.parseNumber(dd[0]);
                 } else if (dd.length > 2) {
                     throw Error("Syntax error: Illegal prefix Number format. " +
                             "Only 1 '+' is allowed in the prefix: " + prefix);
@@ -125,15 +145,23 @@
                             "'+' cannot start a prefix. " +
                             "'+' is put _after_ the delay value, not in front: " + prefix);
                 } else {
-                    this.prefix.delay = this.parseNumber(dd[0]);
+                    this.delay = this.parseNumberStrict(dd[0]);
                     if (dd[1])        //don't bother with converting number if the duration is not specified
-                        this.prefix.duration = this.parseNumber(dd[1]);
+                        this.duration = this.parseNumberStrict(dd[1]);
                 }
             },
-//                    throw new Error("Syntax error: Illegal prefix Number format. " +
-//                                    "Delay and duration only support numbers using these symbols: [0-9./%^]. " +
-//                                    "Your number was: " + str + " and the illegal symbol was: " + str[i] +
-//                                    "Tips! + and - is not allowed in the delay and duration description.");
+            /**
+             * @param str
+             * @returns a number
+             */
+            parseNumberStrict: function (str) {
+                if (str.search(/[^\d.-/^%]/) === -1)
+                    return eval(str);
+                throw new Error("Syntax error: Illegal prefix Number format. " +
+                        "Delay and duration only support numbers using these symbols: [0-9./%^]. " +
+                        "Your number was: " + str + " and the illegal symbol was: " + str[i] +
+                        "Tips! + and - is not allowed in the delay and duration description.");
+            },
             /**
              * @param str
              * @returns a number
@@ -156,6 +184,11 @@
                     notify: true,
                     observer: "parse"
                 }
+            },
+            ready: function(){
+                console.log("unit test the parser:");
+                var one = new EventObject("0.5+2G:1:1@piano?octave:duration");
+                console.log(one);
             },
             parse: function () {
                 if (!this.input)

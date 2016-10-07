@@ -53,9 +53,9 @@
                     var node = events[i];
                     if (Array.isArray(node)) {                        //input ,-array
                         for (var j = 0; j < node.length; j++)
-                            res.push([(j === 0 ? 1 : 0) + node[j].prefix.delay, node[j]]);
+                            res.push([(j === 0 ? 1 : 0) + node[j].delay, node[j]]);
                     } else
-                        res.push([1 + node.prefix.delay, node]);
+                        res.push([1 + node.delay, node]);
                 }
                 this.set("playList", res);
                 this.fire("ready", null);
