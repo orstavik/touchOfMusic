@@ -21,7 +21,8 @@
                                     Delay always ends with a "+".
                                     Delay is always in front of duration.
 
-    WORD = NAME[:ARG]*              :ARG are optional
+    WORD = NAME[:ARG]*              :ARG are optional. All args that can be converted to a number, are converted to a number.
+                                    This also applies to "1/8" which might be beneficial to keep as strings.. they are converted now, this might need to be altered later.
 
     Postfix = @macro
 
@@ -108,8 +109,11 @@
                     wordAr.postfix = pieces[1];
                 var ar = pieces[0].split(":");
                 wordAr.name = ar[0];
-                if (ar.length > 1)
+                if (ar.length > 1){
                     wordAr.args = ar.slice(1);
+                    for (var i = 0; i < wordAr.args.length; i++)
+                        wordAr.args[i] = this._convertToNumber(wordAr.args[i]);
+                }
             },
             parsePrefix: function (res, prefix) {
                 var dd = prefix.split("+");
@@ -131,10 +135,11 @@
             _convertToNumber: function (str) {
                 var i = str.search(/[^\d.-/^%]/);
                 if (i !== -1)
-                    throw new Error("Syntax error: Illegal prefix Number format. " +
-                                    "Delay and duration only support numbers using these symbols: [0-9./%^]. " +
-                                    "Your number was: " + str + " and the illegal symbol was: " + str[i] +
-                                    "Tips! + and - is not allowed in the delay and duration description.");
+                    return str;
+//                    throw new Error("Syntax error: Illegal prefix Number format. " +
+//                                    "Delay and duration only support numbers using these symbols: [0-9./%^]. " +
+//                                    "Your number was: " + str + " and the illegal symbol was: " + str[i] +
+//                                    "Tips! + and - is not allowed in the delay and duration description.");
                 return eval(str);
             }
         });

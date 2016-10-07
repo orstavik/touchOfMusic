@@ -14,14 +14,12 @@
                     value: 1
                 }
             },
-			_alterEvent: function(e) {
-                var oldoctave = e.detail.name.slice(-1);
-                if (Number.isInteger(oldoctave*1)) {
-                    var newoctave = oldoctave*1 + this.octave;
-                    e.detail.name = e.detail.name.replace(oldoctave, newoctave);
-                } else if (oldoctave !== "_") {
-                    e.detail.name += this.octave;
-                }
+			_alterEvent: function(e, detail) {
+                if (detail.name === "_")
+                    return;
+				if ( !e.detail.args)
+					return e.detail.args = [this.octave];
+                return e.detail.args[0] += this.octave;
             }
 		});
 	</script>

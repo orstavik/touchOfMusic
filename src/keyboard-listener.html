@@ -5,7 +5,11 @@
 <dom-module id="keyboard-listener">
     <template>
         <multi-keydown-filter on-multikeydown="multikeys" on-keydown="singlekeys" on-keyup="singlekeys">
-            <document-keyboard></document-keyboard>
+            <finger-position-polyfill i-will-adds-finger-positions-to-events>
+                <polyfill-keyboardevent-code i-will-adds-code-on-the-keydown-keyup-events>
+                    <document-keyboard></document-keyboard>
+                </polyfill-keyboardevent-code>
+            </finger-position-polyfill>
             <!--<iron-a11y-keys id="keys" keys="[[keysAsString]]" target="[[_getDocumentBody]]" on-keys-pressed="keyPress"></iron-a11y-keys>-->
         </multi-keydown-filter>
     </template>
@@ -22,13 +26,10 @@
             },
             multikeys: function (e) {
                 this.push("log", e);
-                //ae alt+e a+e timestamp+e a
                 console.log(e);
             },
             singlekeys: function (e) {
                 this.push("log", e);
-                //ae alt+e a+e timestamp+e a
-//                console.log(e);
             }
         });
     </script>

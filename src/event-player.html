@@ -59,12 +59,10 @@
                 this.fire("ready", null);
             },
             execute: function (event) {
-                if (event.name.indexOf("$s") === 0){     //time command: speed
-                    var factor = this._convertToNumber(event.args[0]);
-                    this.set("ticksPerTurn", this.ticksPerTurn / factor)
-                } else {
+                if (event.name.indexOf("$s") === 0)     //time command: speed
+                    this.set("ticksPerTurn", this.ticksPerTurn / event.args[0])
+                else
                     event.timeStamp = this.fire("play", event).timeStamp;
-                }
                 this.push("log", event);
             },
             readMyTicks: function () {
@@ -79,15 +77,6 @@
                     this.set("tickForNextEvent", this.ticks + turnsToNextEvent * this.ticksPerTurn);
                 }
                 //else just wait until next tick to see if that matches the next tick to be read.
-            },
-            _convertToNumber: function (str) {
-                var i = str.search(/[^\d./^%]/);
-                if (i !== -1)
-                    throw new Error("Syntax error: Illegal prefix Number format. " +
-                            "Delay and duration only support numbers using these symbols: [0-9./%^]. " +
-                            "Your number was: " + str + " and the illegal symbol was: " + str[i] +
-                            "Tips! + and - is not allowed in the delay and duration description.");
-                return eval(str);
             }
         });
     </script>

@@ -6,21 +6,25 @@
         Polymer({
             is: 'multi-keydown-filter',
             properties: {
-                _keysdown : {
-                    type : Array,
-                    value : function(){
+                _keysdown: {
+                    type: Array,
+                    value: function () {
                         return [];
                     }
                 }
             },
             _keyDown: function (e) {
-                var i = this._keysdown.indexOf(e.key);
-                if (i === -1)
+                if (this._keysdown.indexOf(e.key) === -1)
                     this._keysdown.push(e.key);
-                if (this._keysdown.length > 1){
-                    var keysAsString = this._keysdown.join("+");
-                    this.fire("multikeydown", keysAsString);
+                if (this._keysdown.length === 0)
+                    return;
+
+                var res = "";
+                for (var i = 0; i < this._keysdown.length; i++) {
+                    var key = this._keysdown[i];
+                    res = (key.length === 1) ? key + res : res + ":" + key;
                 }
+                this.fire("multikeydown", res);
             },
             _keyUp: function (e) {
                 var i = this._keysdown.indexOf(e.key);
