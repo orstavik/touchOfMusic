@@ -81,7 +81,7 @@
 			    this.$.synthesizer.playTone(tone);
 			},
 			showTone: function(e){
-			    var note = e.detail.name.toUpperCase() + (e.detail.args ? e.detail.args[0] : "");
+			    var note = e.detail.args[0].toUpperCase() + (e.detail.args[1] ? e.detail.args[1] : "");
 			    this.$.synthesizer.playTone(note);
 			},
 			showToneSoon: function(e){

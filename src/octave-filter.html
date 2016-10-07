@@ -15,11 +15,11 @@
                 }
             },
 			_alterEvent: function(e, detail) {
-                if (detail.name === "_")
+                if (detail.args[0] === "_")
                     return;
-				if ( !e.detail.args)
-					return e.detail.args = [this.octave];
-                return e.detail.args[0] += this.octave;
+				if ( !e.detail.args[1])
+					return e.detail.args[1] = this.octave;
+                return e.detail.args[1] += this.octave;
             }
 		});
 	</script>
