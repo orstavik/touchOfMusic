@@ -3,16 +3,49 @@
     <!--
     This handles the following format:
 
-    prefixWORDpostfix
-
-    prefix = delay+duration
-    WORD = NAME:ARG:ARG
-    postfix = @macro
-
     delay+durationNAME:ARG:ARG@macro
 
+    word word word word,word word word word,word,word word
+    " " space separates each word
+    "," separates words that are to be understood as on the same time, played synchronously.
+
+    Tip, special command events are often added after a comma on the previous event, so that it is not given a separate turn.
+
+    Each word is constructed as follows:
+    [delay+][duration]NAME[:ARG][:ARG][@macro]
+
+
+    [Prefix]WORD[Postfix]           prefix and postfix are optional
+
+    Prefix = [Delay+][Duration]     both delay and duration are optional.
+                                    Delay always ends with a "+".
+                                    Delay is always in front of duration.
+
+    WORD = NAME[:ARG]*              :ARG are optional
+
+    Postfix = @macro
+
+    Numbers.                        All units that consists only of the characters "0123456789.-/^%"
+    NAME                            starts with a-zA-Z_$ and ends at the first ":@ " (Colon, at and space).
+                                    Any argument that consists only of Number characters are parsed as a number.
+
+
     examples:
-    0.5+2G:v.8@guitar => wait half a turn until you play a note G that takes
+    0.5+2G:v.8@guitar => wait half a turn until you play a note G with a duration of 2 turns on the guitar
+    $s:.5 => set the speed to hald (.5)
+    $r:4:2 => repeat the four last turns two more times
+
+    a song:
+    c1 c1 c1 g a a 2g _ e1 e1
+
+    The space separate the turns. If each turn is half a second long,
+    then each turn will be delayed by half a second from the start of the
+    previous turn. That will produce a rythmic sound.
+    If played by a piano, this would be the start of "old macDonald had a farm".
+    It could also be played by a game engine that initiates enemy spaceships
+    type "c", "g", "a" etc from direction default=top, 1=left.
+
+    TODO: Should we add "-" to describe events that are to be played sequentially, one after the other?
     -->
 
     <script>
@@ -96,7 +129,7 @@
                 }
             },
             _convertToNumber: function (str) {
-                var i = str.search(/[^\d./^%]/);
+                var i = str.search(/[^\d.-/^%]/);
                 if (i !== -1)
                     throw new Error("Syntax error: Illegal prefix Number format. " +
                                     "Delay and duration only support numbers using these symbols: [0-9./%^]. " +
