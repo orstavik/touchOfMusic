@@ -1,14 +1,15 @@
 <!--<link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">-->
 <link rel="import" href="multi-keydown-filter.html">
 <link rel="import" href="document-keyboard.html">
+<link rel="import" href="keyevent-code.html">
 
 <dom-module id="keyboard-listener">
     <template>
         <multi-keydown-filter on-multikeydown="multikeys" on-keydown="singlekeys" on-keyup="singlekeys">
             <finger-position-polyfill i-will-adds-finger-positions-to-events>
-                <polyfill-keyboardevent-code i-will-adds-code-on-the-keydown-keyup-events>
+                <keyevent-code>
                     <document-keyboard></document-keyboard>
-                </polyfill-keyboardevent-code>
+                </keyevent-code>
             </finger-position-polyfill>
             <!--<iron-a11y-keys id="keys" keys="[[keysAsString]]" target="[[_getDocumentBody]]" on-keys-pressed="keyPress"></iron-a11y-keys>-->
         </multi-keydown-filter>
