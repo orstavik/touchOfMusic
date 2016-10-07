@@ -6,7 +6,7 @@
             is: 'event-player',
             properties: {
                 input: {
-                    type: Array,
+                    type: Object,
                     observer: "makePlayList"
                 },
                 playList: {
@@ -44,11 +44,13 @@
                 //we need to match the tick number with all the elements in the list that has a time value that is
                 //when tick >= the tick.value in the file and tick <= tick.value+1
                 //[[1,a], [1,b], [1,a], [.5,d]]
-                if (!this.input && !this.input.length)
+
+                var events = this.input.songAsEvents;
+                if (!events && !events.length)
                     return;
                 var res = [];
-                for (var i = 0; i < this.input.length; i++) {
-                    var node = this.input[i];
+                for (var i = 0; i < events.length; i++) {
+                    var node = events[i];
                     if (Array.isArray(node)) {                        //input ,-array
                         for (var j = 0; j < node.length; j++)
                             res.push([(j === 0 ? 1 : 0) + node[j].prefix.delay, node[j]]);
