@@ -1,9 +1,96 @@
 <dom-module id="event-list-parser">
 
     <!--
-    This handles the following format:
+    Event Turn Format
 
-    delay+durationNAME:ARG:ARG@macro
+    GENERAL DESCRIPTION
+    ###################
+    The Event Turn Format is a way to describe a sequence of events, TurnSequence.
+    The format lists a series of Turns that are separated by whitespace.
+    Each Turn can consist of a single TurnEvent or a TurnEventList.
+    A TurnEventList is a series of TurnEvents separated by comma.
+
+    Each TurnEvent consist of a TurnPrefix and an Event.
+    The TurnPrefix specify the delay of the Event and the duration of the Event.
+    If no TurnPrefix is specified, the
+    default delay = 0 and default duration = 1.
+
+    Each Event specify:
+     - an EventName
+     - a list of EventValues,
+     - a list of EventProperties,
+     - an EventTarget.
+
+    The Target is the address for where the Event is to be sent from, similar to the Event.target in js.
+    The goal or recipient of the Event is to be associated with the EventName, because
+    it is likely to be several receivers of an Event and that receiver change from context to context.
+
+    ATT!! All parts of the Event are optional. But, an Event must contain either one EventValue or the EventName.
+    The EventName starts with $String. If there is no EventName,
+    the first EventValue must begin with a letter not a Number [a-z_].
+
+    A file describing EventSequences can list one or more EventSequences.
+    The file also contains another lists of DefaultPropertiesObject.
+    Each DefaultPropertiesObjects is specified as a json object:
+    "DefaultPropertiesObjectName": {
+        "prop1": "value1",
+        "prop2": 2,
+    }
+    If the DefaultPropertiesObjectName starts with @,
+        then the default values should apply to Events with this EventTarget.
+    Else, the DefaultPropertiesObject should apply to Events with EventNames
+        that match should apply to Events the DefaultPropertiesObjectName
+
+    DefaultPropertiesObjects are added in json,
+    and there can only be one DefaultPropertiesObject for each DefaultPropertiesObjectName.
+    The last one read will overwrite any previous DefaultPropertiesObject with the same DefaultPropertiesObjectName.
+
+    If an Event has a DefaultPropertiesObject for both its EventName and its EventTarget,
+    the DefaultPropertiesObject for the EventName is added first, thus giving property types for any EventValues
+    that are not specified in the Event itself, and then the DefaultPropertiesObject for the EventTarget is added.
+    The DefaultPropertiesObject for the EventTarget is thus given priority and overwrite the default settings for
+    the EventName.
+
+
+    Simplified SYNTACTIC DESCCRIPTION
+    #################################
+    TurnSequence = Turn Turn Turn
+    Turn = TurnEvent | TurnEventList
+    TurnEventList = TurnEvent,TurnEvent,TurnEvent
+
+    TurnEvent = [TurnPrefix]Event
+    TurnPrefix = [EventDelay][EventDuration]
+    EventDelay = Number+
+    EventDuration = Number
+
+    Event = EventName[EventValues][?EventProperties][@EventTarget] | EventName[EventValues][?EventProperties][@EventTarget]
+    EventName = String that does not start with a legal Number character.
+    EventValueList = [:[EventValue]]*
+    EventValue = Number | String.
+    EventPropertyList = ?[EventProperty[:[EventProperty]]*]
+    EventProperty = String.
+    EventTarget = @EventTargetName
+    EventTargetName = String.
+
+    String = any character that is not Whitespace, ',', :, @ or ?.
+    Number = [0123456789.-/^%]+
+
+    Examples:
+    A song:          C:1 C:1 C:1 G D D F A A B B F F G:2 _
+            defaults: $playTone{tone: "C", octave:3, volume:0.8}, @piano{octave:4}
+            would result in the first event output: 0+1$playTone:C:5:0.8?tone:octave:volume@piano
+    default
+    A ChessGame:
+    A complex note.  0.5+2$playTone:G:4?octave@piano
+
+
+    Simplified TYPE DESCRIPTION
+    ###########################
+
+
+
+
+    delay+durationARG:ARG:ARG@type?prop:prop:prop
 
     word word word word,word word word word,word,word word
     " " space separates each word
@@ -65,6 +152,7 @@
     type "c", "g", "a" etc from direction default=top, 1=left.
 
     TODO: Should we add "-" to describe events that are to be played sequentially, one after the other?
+    TODO: right now it is not made a specific decision if there can be more ARGs than PROPs, if some of the props are defined.
 
     The filters of events can reduce the values, but more likely they just add more values to the event.
     And then it is only a point when we compare two events that we have the same property to compare against.
@@ -77,13 +165,57 @@
     <script>
 
         function EventObject(str) {
-            this.prefix = Object.create(null);
             this.delay = 0;
             this.duration = 1;
             this.parse(str);
         }
 
+        /**
+         * An EventObject contains a delay, a duration, an array of args, an array of properties, a type ((and a target))?
+         * All parts of the EventObject are optional, except for args[0]. args[0] must begin with a letter.
+         *
+         * Together the array of args and properties form a sort of map.
+         * The arg at any index is the value of the property at the same index.
+         * ATT!! You can specify both properties and args that have noe corresponding value, it is super soft typed.
+         *
+         * Delay - optional, a Number, default value = 0.
+         * Duration - optional, a Number, default value = 1.
+         * args[0] - required, a string that starts with [a-z_$].
+         * args[1-*] - optional, any type such as a string, Object, Number, Date, etc.
+         * props[0-*] - optional, strings.
+         * type - optional, a string.
+         */
         EventObject.prototype = {
+            /**
+             * It adds all the properties of the object not already assigned by the object.
+             * If this object which the defs are added to, has unspecified args/values, then they are added in
+             * chronological order over the default values.
+             *
+             * @param defs object of extra default definitions
+             */
+            updateArgsAndProps: function () {
+                var myProps = {};
+                var isPropped = false;
+                if (this.args && this.props) {
+                    isPropped = true;
+                    if (this.args.length == this.props.length)
+                        for (var i = 0; i < this.props.length; i++)
+                            myProps[this.props[i]] = this.args[i];
+                    else
+                        throw new Error("Syntax error: You have different quantity of args and props. " +
+                                "It is impossible to guess which value belongs to which prop: " + stem);
+                }
+                this.map = Object.assign({}, this.nameProps, this.targetProps, this.map);
+                if (isPropped || !this.args)
+                    return;
+
+                var self = this;
+                Object.keys(this.map).forEach(function (key, index, nr3) {
+                    if (self.args.length <= index)
+                        return;
+                    self.map[key] = self.args[index];
+                });
+            },
             /**
              * Split prefix - stemPostfix.
              * There must be a stem, but prefix is optional.
@@ -95,43 +227,39 @@
             parse: function (word) {
                 var index = word.search(/[a-zA-Z_$]/);
                 if (index < 0)
-                    throw new Error("Syntax error: All events must include a word starting with [a-zA-Z_]: " + word);
+                    throw new Error("Syntax error: All events must include a word starting with [a-zA-Z_$]: " + word);
                 if (index === 0)
-                    return this.parseStem(word);
+                    return this.parseEvent(word);
                 this.parsePrefix(word.substr(0, index));
-                this.parseStem(word.substr(index));
+                this.parseEvent(word.substr(index));
             },
-            parseStem: function (stem) {
+            parseEvent: function (stem) {
+                //find the tails first, @ and ?
                 var pieces = stem.split("@");
                 if (pieces.length > 2)
                     throw new Error("Syntax error: Only one postfix ('@') is allowed: " + stem);
                 //do postfix first.
-                var doneProps = false;
                 if (pieces.length === 2) {
                     var pieces3 = pieces[1].split("?");
+                    this.target = pieces3[0];
                     if (pieces3.length === 2) {
-                        doneProps = true;
                         this.props = pieces3[1].split(":");
-                        this.type = pieces3[0];
                     }
                 }
-                var values = pieces[0];
-                var pieces2 = values.split("?");
-                if (pieces2.length > 2)
+                var head = pieces[0];
+                var pieces2 = head.split("?");
+                head = pieces2[0];
+                if (pieces2.length > 2 || pieces2.length === 2 && this.props)
                     throw new Error("Syntax error: Only one one property-separator ('?') is allowed: " + stem);
-                if (pieces2.length === 2) {
-                    if (doneProps)
-                        throw new Error("Syntax error: Only one one property-separator ('?') is allowed: " + stem);
+                if (pieces2.length === 2)
                     this.props = pieces2[1].split(":");
-                    values = pieces2[0];
-                }
-                this.args = this.parseValues(values);
-            },
-            parseValues: function (values) {
-                var ar = values.split(":");
-                for (var i = 0; i < ar.length; i++)
-                    ar[i] = this.parseNumber(ar[i]);
-                return ar;
+
+                var ar = head.split(":");
+                if (ar[0].startsWith("$"))
+                    this.name = ar.shift();
+                this.args = ar;
+                for (var i = 0; i < this.args.length; i++)
+                    this.args[i] = this.parseNumber(this.args[i]);
             },
             parsePrefix: function (prefix) {
                 var dd = prefix.split("+");
@@ -155,7 +283,7 @@
              * @returns a number
              */
             parseNumberStrict: function (str) {
-                if (str.search(/[^\d.-/^%]/) === -1)
+                if (str.search(/[\d.-/^%]+/) >= 0)
                     return eval(str);
                 throw new Error("Syntax error: Illegal prefix Number format. " +
                         "Delay and duration only support numbers using these symbols: [0-9./%^]. " +
@@ -185,15 +313,16 @@
                     observer: "parse"
                 }
             },
-            ready: function(){
+            ready: function () {
                 console.log("unit test the parser:");
-                var one = new EventObject("0.5+2G:1:1@piano?octave:duration");
+                var one = new EventObject("0.5+2G:1:1@piano?tone:octave:duration");
                 console.log(one);
             },
             parse: function () {
-                if (!this.input)
+                if (!this.input || !this.input.events)
                     return;
-                var array = this.input.split(" ");
+                var evs = this.input.events;
+                var array = evs.split(" ");
                 for (var i = 0; i < array.length; i++)
                     array [i] = this.parseComma(array[i]);
                 this.set("output", array);
@@ -201,8 +330,18 @@
             parseComma: function (word) {
                 var pieces = word.split(",");
                 for (var i = 0; i < pieces.length; i++)
-                    pieces[i] = new EventObject(pieces[i]);
+                    pieces[i] = this.addTypeDefs(new EventObject(pieces[i]));
                 return pieces.length === 1 ? pieces[0] : pieces;
+            },
+            addTypeDefs: function (te) {
+                if (!te.name)
+                    te.name = this.input.defaultName;
+                if (!te.target)
+                    te.target = this.input.defaultTarget;
+                te.targetProps = this.input[te.target];
+                te.nameProps = this.input[te.name];
+                te.updateArgsAndProps();
+                return te;
             }
         });
     </script>

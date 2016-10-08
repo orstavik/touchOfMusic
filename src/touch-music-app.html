@@ -32,7 +32,7 @@
 						log="{{thisIsWhatWeNeedToMatchTheUsersPerformanceAgainst}}" ticks="[[ticks]]"
 						input="[[jsonSong]]" on-ready="musicPlayerReady">
 				<songs-set id="libs" song-name="oldMacDonald" curr-song="{{jsonSong}}"></songs-set>
-				<event-list-parser id="eParser" input="{{jsonSong.events}}" output="{{jsonSong.songAsEvents}}"></event-list-parser>
+				<event-list-parser id="eParser" input="{{jsonSong}}" output="{{jsonSong.songAsEvents}}"></event-list-parser>
 			</event-player>
 		</octave-filter>
         <!--<game-master id="master" ></game-master>-->

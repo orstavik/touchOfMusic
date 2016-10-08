@@ -61,8 +61,8 @@
                 this.fire("ready", null);
             },
             execute: function (event) {
-                if (event.args[0].indexOf("$s") === 0)     //time command: speed
-                    this.set("ticksPerTurn", this.ticksPerTurn / event.args[1])
+                if (event.name.indexOf("$s") === 0)     //time command: speed
+                    this.set("ticksPerTurn", this.ticksPerTurn / event.args[0])
                 else
                     event.timeStamp = this.fire("play", event).timeStamp;
                 this.push("log", event);
