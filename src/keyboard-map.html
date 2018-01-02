@@ -10,53 +10,98 @@
 			}
 
 			:host ::content key-node {
-				display: inline-block;
+				display: flex;
+				align-items: center;
+				justify-content: center;
 				box-sizing: border-box;
+				padding: 0.5vw;
 				width: 6.666%;
 				height: 5.3vw;
-				border: 1px solid black;
+				font-size: 1.5vw;
+    			font-weight: bold;
 			}
 			
-			:host ::content key-node[letter="backspace"] {
+			:host ::content key-node[letter="Backspace"] {
 				width: 13.333%;
 			}
 			
-			:host ::content key-node[letter="tab"] {
+			:host ::content key-node[letter="Tab"] {
 				width: 10%;
 			}
 			
-			:host ::content key-node[letter="\\"] {
+			:host ::content key-node[letter="Backslash"] {
 				width: 10%;
 			}
 			
-			:host ::content key-node[letter="capslock"] {
+			:host ::content key-node[letter="CapsLock"] {
 				width: 11.666%;
 			}
 			
-			:host ::content key-node[letter="enter"] {
+			:host ::content key-node[letter="Enter"] {
 				width: 15%;
 			}
 			
-			:host ::content key-node[letter="shiftL"] {
+			:host ::content key-node[letter="ShiftLeft"] {
 				width: 15%;
 			}
 			
-			:host ::content key-node[letter="shiftR"] {
+			:host ::content key-node[letter="ShiftRight"] {
 				width: 18.333%;
 			}
 			
-			:host ::content key-node[letter="space"] {
+			:host ::content key-node[letter="Space"] {
 				width: 73.333%;
 			}
 		</style>
 
-		<content></content>
+		<content on-tap="whoWasTapped"></content>
 		
 	</template>
 
 	<script>
 		Polymer({
-			is: 'keyboard-map'
+			is: 'keyboard-map',
+			monsterInstr: [
+				["50vw", "80vh", "2", "45deg"],
+				["50vw", "80vh", "2", "45deg"],
+				["50vw", "80vh", "2", "45deg"],
+				["50vw", "80vh", "2", "45deg"],
+				["50vw", "80vh", "2", "45deg"],
+				["30vw", "70vh", "1", "-45deg"],
+				["30vw", "70vh", "1", "-45deg"],
+				["30vw", "70vh", "1", "-45deg"],
+				["30vw", "70vh", "1", "-45deg"],
+				["30vw", "70vh", "1", "-45deg"],
+				["70vw", "80vh", "0.5", "95deg"],
+				["70vw", "80vh", "0.5", "95deg"],
+				["70vw", "80vh", "0.5", "95deg"],
+				["70vw", "80vh", "0.5", "95deg"],
+				["70vw", "80vh", "0.5", "95deg"]
+			],
+			i: 0,
+			whoWasTapped: function(e) {
+				var origin = e.target;
+				var clone = origin.cloneNode(true);
+				var app = document.querySelector("touch-music-app");
+				var monster = app.shadowRoot.querySelector("#monster");
+				var oPos = origin.getBoundingClientRect();
+
+				clone.style.position = "absolute";
+				clone.style.width = oPos.width + "px";
+				clone.style.height = oPos.height + "px";
+				clone.style.left = "0px";
+				clone.style.top = "0px";
+				clone.style.transform = "translate("+oPos.left+"px, "+oPos.top+"px)";
+				clone.style.transitionDuration = "4s";
+				monster.appendChild(clone);
+
+				var config = this.monsterInstr[this.i];
+				setTimeout(function() {
+					clone.style.transform = "translate("+config[0]+", "+config[1]+") scale("+config[2]+") rotate("+config[3]+")";
+				}, 1);
+				console.log(monster);
+				this.i++;
+			}
 		});
 	</script>
 </dom-module>

@@ -9,6 +9,7 @@
 <link rel="import" href="synthesizer-player.html">
 <link rel="import" href="music-instrument.html">
 <link rel="import" href="octave-filter.html">
+<link rel="import" href="monster-body.html">
 
 <dom-module id="touch-music-app">
 	<template>
@@ -47,10 +48,12 @@
 			</template>
 		</keyboard-map>
 
+		<monster-body id="monster"></monster-body>
+
 		<finger-position-map id="fingerPositionMap"></finger-position-map>
 		<finger-move-to-tone-map id="fingerMoveToToneMap"></finger-move-to-tone-map>
 
-		<keyboard-listener on-play_soon="playFingerMoveMusic" on-key-event="keyIsHit" key-set="[[keysArray]]" last-pressed="{{lastKey}}"></keyboard-listener>
+		<keyboard-listener on-play_soon="playFingerMoveMusic" key-set="[[keysArray]]" last-pressed="{{lastKey}}"></keyboard-listener>
 
 	</template>
 
@@ -62,15 +65,18 @@
 					type: Array,
 					value: function() {
 						return [
-							"`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "backspace",
-							"tab", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\",
-							"capslock", "a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'", "enter",
-							"shiftL", "z", "x", "c", "v", "b", "n", "m", ",", ".", "/", "shiftR",
-							"ctrlL", "altL", "space", "altR", "ctrlR"
+							"Backquote", "Digit1", "Digit2", "Digit3", "Digit4", "Digit5", "Digit6", "Digit7", "Digit8", "Digit9", "Digit0", "Minus", "Equal", "Backspace",
+							"Tab", "KeyQ", "KeyW", "KeyE", "KeyR", "KeyT", "KeyY", "KeyU", "KeyI", "KeyO", "KeyP", "BracketLeft", "BracketRight", "Backslash",
+							"CapsLock", "KeyA", "KeyS", "KeyD", "KeyF", "KeyG", "KeyH", "KeyJ", "KeyK", "KeyL", "Semicolon", "Quote", "Enter",
+							"ShiftLeft", "KeyZ", "KeyX", "KeyC", "KeyV", "KeyB", "KeyN", "KeyM", "Comma", "Period", "Slash", "ShiftRight",
+							"ControlLeft", "AltLeft", "Space", "AltRight", "ControlRight"
 						]
 					}
 				},
 				songAsEvents: {
+					type: Array
+				},
+				highKeys: {
 					type: Array
 				}
 			},

@@ -8,9 +8,7 @@
             properties: {
                 _keysdown: {
                     type: Array,
-                    value: function () {
-                        return [];
-                    }
+                    notify: true
                 }
             },
             _makeEvent: function (ar) {
@@ -22,6 +20,7 @@
                 return {name: res, children: ar};
             },
             _keyDown: function (e) {
+                if (!this._keysdown) this._keysdown = [];
                 if (this._keysdown.indexOf(e.code) === -1)
                     this._keysdown.push(e.code);
                 if (this._keysdown.length <= 1)

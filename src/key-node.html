@@ -17,9 +17,60 @@
 					background: initial;
 				}
 			}
+
+			:host {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				box-sizing: border-box;
+				padding: 0.5vw;
+				width: 6.666%;
+				height: 5.3vw;
+				font-size: 1.5vw;
+    			font-weight: bold;
+			}
+
+			#shape {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 100%;
+				height: 100%;
+				border: 1px solid;
+			}
+
+			#shape.circle {
+				border-radius: 50%;
+			}
+
+			#shape.triangleT {
+				border-top-left-radius: 50%;
+				border-bottom-right-radius: 50%;
+			}
+
+			#shape.triangleB {
+				border-bottom-left-radius: 50%;
+				border-bottom-right-radius: 50%;
+			}
+
+			#shape.pinky {
+				background: yellow
+			}
+
+			#shape.ringfinger {
+				background: deepskyblue
+			}
+
+			#shape.longfinger {
+				background: crimson
+			}
+
+			#shape.index {
+				background: green
+			}
 		</style>
 
-		[[letter]]
+		<div id="shape">[[_compileLetter(letter)]]</div>
 
 	</template>
 
@@ -28,8 +79,168 @@
 			is: 'key-node',
 			properties: {
 				letter: {
-					type: String
-				}
+					type: String,
+					observer: "_compileClass"
+				},
+				charMap: {
+					type: Object,
+					value: function() {
+						return {
+							ShiftLeft: {key: 'Shift'},
+							ShiftRight: {key: 'Shift'},
+							ControlLeft: {key: 'Ctrl'},
+							ControlRight: {key: 'Ctrl'},
+							AltLeft: {key: 'Alt'},
+							AltRight: {key: 'Alt'},
+							MetaLeft: {key: 'Meta'},
+							MetaRight: {key: 'Meta'},
+							NumpadEnter: {key: 'Enter'},
+							Space: {key: ' '},
+							Digit0: {key: '0', shiftKey: ')'},
+							Digit1: {key: '1', shiftKey: '!'},
+							Digit2: {key: '2', shiftKey: '@'},
+							Digit3: {key: '3', shiftKey: '#'},
+							Digit4: {key: '4', shiftKey: '$'},
+							Digit5: {key: '5', shiftKey: '%'},
+							Digit6: {key: '6', shiftKey: '^'},
+							Digit7: {key: '7', shiftKey: '&'},
+							Digit8: {key: '8', shiftKey: '*'},
+							Digit9: {key: '9', shiftKey: '('},
+							KeyA: {key: 'a', shiftKey: 'A'},
+							KeyB: {key: 'b', shiftKey: 'B'},
+							KeyC: {key: 'c', shiftKey: 'C'},
+							KeyD: {key: 'd', shiftKey: 'D'},
+							KeyE: {key: 'e', shiftKey: 'E'},
+							KeyF: {key: 'f', shiftKey: 'F'},
+							KeyG: {key: 'g', shiftKey: 'G'},
+							KeyH: {key: 'h', shiftKey: 'H'},
+							KeyI: {key: 'i', shiftKey: 'I'},
+							KeyJ: {key: 'j', shiftKey: 'J'},
+							KeyK: {key: 'k', shiftKey: 'K'},
+							KeyL: {key: 'l', shiftKey: 'L'},
+							KeyM: {key: 'm', shiftKey: 'M'},
+							KeyN: {key: 'n', shiftKey: 'N'},
+							KeyO: {key: 'o', shiftKey: 'O'},
+							KeyP: {key: 'p', shiftKey: 'P'},
+							KeyQ: {key: 'q', shiftKey: 'Q'},
+							KeyR: {key: 'r', shiftKey: 'R'},
+							KeyS: {key: 's', shiftKey: 'S'},
+							KeyT: {key: 't', shiftKey: 'T'},
+							KeyU: {key: 'u', shiftKey: 'U'},
+							KeyV: {key: 'v', shiftKey: 'V'},
+							KeyW: {key: 'w', shiftKey: 'W'},
+							KeyX: {key: 'x', shiftKey: 'X'},
+							KeyY: {key: 'y', shiftKey: 'Y'},
+							KeyZ: {key: 'z', shiftKey: 'Z'},
+							Numpad0: {key: '0'},
+							Numpad1: {key: '1'},
+							Numpad2: {key: '2'},
+							Numpad3: {key: '3'},
+							Numpad4: {key: '4'},
+							Numpad5: {key: '5'},
+							Numpad6: {key: '6'},
+							Numpad7: {key: '7'},
+							Numpad8: {key: '8'},
+							Numpad9: {key: '9'},
+							NumpadMultiply: {key: '*'},
+							NumpadAdd: {key: '+'},
+							NumpadComma: {key: ','},
+							NumpadSubtract: {key: '-'},
+							NumpadDecimal: {key: '.'},
+							NumpadDivide: {key: '/'},
+							Semicolon: {key: ';', shiftKey: ':'},
+							Equal: {key: '=', shiftKey: '+'},
+							Comma: {key: ',', shiftKey: '<'},
+							Minus: {key: '-', shiftKey: '_'},
+							Period: {key: '.', shiftKey: '>'},
+							Slash: {key: '/', shiftKey: '?'},
+							Backquote: {key: '`', shiftKey: '~'},
+							BracketLeft: {key: '[', shiftKey: '{'},
+							Backslash: {key: '\\', shiftKey: '|'},
+							BracketRight: {key: ']', shiftKey: '}'},
+							Quote: {key: '\'', shiftKey: '"'},
+							IntlBackslash: {key: '\\', shiftKey: '|'},
+							Backspace: {key: 'Backspace'},
+							Tab: {key: 'Tab'},
+							Enter: {key: 'Enter'},
+							CapsLock: {key: 'CapsLock'},
+						}
+                	}
+				},
+                fingerMap: {
+                    type: Object,
+                    value: function () {
+                        return {
+                            Backquote: new Finger(2, 9, 2), // `
+                            Digit1: new Finger(2, 9, 1), // 1
+                            Digit2: new Finger(2, 9, 0), // 2
+                            Digit3: new Finger(2, 8, 0), // 3
+                            Digit4: new Finger(2, 7, 0), // 4
+                            Digit5: new Finger(2, 6, 0), // 5
+                            Digit6: new Finger(2, 6, 1), // 6
+                            Digit7: new Finger(2, 1, 0), // 7
+                            Digit8: new Finger(2, 2, 0), // 8
+                            Digit9: new Finger(2, 3, 0), // 9
+                            Digit0: new Finger(2, 4, 0), // 0
+                            Minus: new Finger(2, 4, 1), // -
+                            Equal: new Finger(2, 4, 2), // =
+                            Backspace: new Finger(2, 4, 3), // "backspace"
+                            Tab: new Finger(1, 9, 1), // "tab"
+                            KeyQ: new Finger(1, 9, 0), // Q
+                            KeyW: new Finger(1, 8, 0), // W
+                            KeyE: new Finger(1, 7, 0), // E
+                            KeyR: new Finger(1, 6, 0), // R
+                            KeyT: new Finger(1, 6, 1), // T
+                            KeyY: new Finger(1, 1, 1), // Y
+                            KeyU: new Finger(1, 1, 0), // U
+                            KeyI: new Finger(1, 2, 0), // I
+                            KeyO: new Finger(1, 3, 0), // O
+                            KeyP: new Finger(1, 4, 0), // P
+                            BracketLeft: new Finger(1, 4, 1), // [
+                            BracketRight: new Finger(1, 4, 2), // ]
+                            Backslash: new Finger(1, 4, 3), // \
+                            CapsLock: new Finger(0, 9, 1), // "caps lock"
+                            KeyA: new Finger(0, 9, 0), // A
+                            KeyS: new Finger(0, 8, 0), // S
+                            KeyD: new Finger(0, 7, 0), // D
+                            KeyF: new Finger(0, 6, 0), // F
+                            KeyG: new Finger(0, 6, 1), // G
+                            KeyH: new Finger(0, 1, 1), // H
+                            KeyJ: new Finger(0, 1, 0), // J
+                            KeyK: new Finger(0, 2, 0), // K
+                            KeyL: new Finger(0, 3, 0), // L
+                            Semicolon: new Finger(0, 4, 0), // ;
+                            Quote: new Finger(0, 4, 1), // '
+                            Enter: new Finger(0, 4, 2), // "enter"
+                            ShiftLeft: new Finger(-1, 9, 0), // "shift"
+                            KeyZ: new Finger(-1, 8, 0), // Z
+                            KeyX: new Finger(-1, 7, 0), // X
+                            KeyC: new Finger(-1, 6, 0), // C
+                            KeyV: new Finger(-1, 6, 1), // V
+                            KeyB: new Finger(-1, 1, 2), // B
+                            KeyN: new Finger(-1, 1, 1), // N
+                            KeyM: new Finger(-1, 1, 0), // M
+                            Comma: new Finger(-1, 2, 0), // ,
+                            Period: new Finger(-1, 3, 0), // .
+                            Slash: new Finger(-1, 4, 0), // /
+                            ShiftRight: new Finger(-1, 4, 1), // "shift"
+                            Space: new Finger(-2, 0, 0) // "space"
+                        };
+                    }
+                }
+			},
+			_compileLetter: function(letter) {
+				return this.charMap[letter].key;
+			},
+			_compileClass: function() {
+				if (!this.fingerMap[this.letter]) return;
+				var row = this.fingerMap[this.letter].row;
+				var shape = this.fingerMap[this.letter].getKeyShape(row);
+				var finger = this.fingerMap[this.letter].finger;
+				var fingerName = this.fingerMap[this.letter].fingerArray[finger];
+				var fingerName = fingerName.split(" ");
+				this.$.shape.classList.add(fingerName[1]);
+				this.$.shape.classList.add(shape);
 			}
 		});
 	</script>

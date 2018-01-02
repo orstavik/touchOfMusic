@@ -1,0 +1,32 @@
+[debug] [2018-01-02T10:44:41.699Z] ----------------------------------------------------------------------
+[debug] [2018-01-02T10:44:41.701Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\fales\AppData\Roaming\npm\node_modules\firebase-tools\bin\firebase serve
+[debug] [2018-01-02T10:44:41.701Z] CLI Version:   3.16.0
+[debug] [2018-01-02T10:44:41.701Z] Platform:      win32
+[debug] [2018-01-02T10:44:41.701Z] Node Version:  v9.2.0
+[debug] [2018-01-02T10:44:41.702Z] Time:          Tue Jan 02 2018 12:44:41 GMT+0200 (FLE Standard Time)
+[debug] [2018-01-02T10:44:41.702Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-01-02T10:44:41.712Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-01-02T10:44:41.712Z] > authorizing via signed-in user
+[debug] [2018-01-02T10:44:41.714Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/summer-on-firebase  
+  
+ Tue Jan 02 2018 12:44:41 GMT+0200 (FLE Standard Time)
+[debug] [2018-01-02T10:44:42.679Z] <<< HTTP RESPONSE 200
+[debug] [2018-01-02T10:44:42.679Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/summer-on-firebase/tokens  
+  
+ Tue Jan 02 2018 12:44:42 GMT+0200 (FLE Standard Time)
+[debug] [2018-01-02T10:44:43.578Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from 'E:\Programming\Polymer\interText\touchOfMusic'...
+[info] 
+[debug] [2018-01-02T10:44:43.581Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/summer-on-firebase  
+  
+ Tue Jan 02 2018 12:44:43 GMT+0200 (FLE Standard Time)
+[debug] [2018-01-02T10:44:44.417Z] <<< HTTP RESPONSE 200
+[debug] [2018-01-02T10:44:44.418Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/90680327967/clients/_:getWebAppConfig  
+  
+ Tue Jan 02 2018 12:44:44 GMT+0200 (FLE Standard Time)
+[debug] [2018-01-02T10:44:45.573Z] <<< HTTP RESPONSE 200
+[info] i  hosting: Serving hosting files from: /
+[info] +  hosting: Local server: http://localhost:5000
+

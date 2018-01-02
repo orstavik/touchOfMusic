@@ -24,6 +24,16 @@
                 "Left ringfinger",
                 "Left pinky"
             ],
+            getKeyShape: function(code) {
+                var shapeMap = [
+					"diamond",
+					"triangleB",
+					"square",
+					"triangleT",
+					"circle",
+				];
+                return shapeMap[code+2];
+            },
             getFingerMoveVector: function () {
                 return [this.row, this.finger, this.distance];
             },

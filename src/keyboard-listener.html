@@ -6,7 +6,7 @@
 
 <dom-module id="keyboard-listener">
     <template>
-        <multi-keydown-filter on-multikeydown="multikeys" on-keydown="singlekeys" on-keyup="singlekeys">
+        <multi-keydown-filter on-multikeydown="multikeys" on-keydown="singlekeys" on-keyup="singlekeys" _keysdown="{{highKeys}}">
             <finger-position-filter i-will-adds-finger-positions-to-events>
                 <keyevent-code>
                     <document-keyboard></document-keyboard>
@@ -44,13 +44,11 @@
                 }
             },
             multikeys: function (e) {
-                console.log(e);
                 this.push("log", e);
             },
             singlekeys: function (e) {
-                console.log(e);
                 this.push("log", e);
-            }
+            },
         });
     </script>
 </dom-module>
